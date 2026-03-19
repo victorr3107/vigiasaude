@@ -1,0 +1,1408 @@
+{
+  "total_pendente": 365943,
+  "ultima_competencia_com_pendentes": "2026-03",
+  "por_uf": [
+    {
+      "uf": "SP",
+      "fichas": 163987,
+      "municipios": 48,
+      "competencias": [
+        "2024-04",
+        "2025-01",
+        "2025-03",
+        "2025-06",
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "RS",
+      "fichas": 43753,
+      "municipios": 50,
+      "competencias": [
+        "2024-10",
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "PR",
+      "fichas": 34234,
+      "municipios": 34,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "PB",
+      "fichas": 28241,
+      "municipios": 1,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "MG",
+      "fichas": 23664,
+      "municipios": 36,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "RJ",
+      "fichas": 19807,
+      "municipios": 14,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "MT",
+      "fichas": 14854,
+      "municipios": 10,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "uf": "MS",
+      "fichas": 9944,
+      "municipios": 7,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "SE",
+      "fichas": 8306,
+      "municipios": 10,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "GO",
+      "fichas": 8095,
+      "municipios": 5,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "PE",
+      "fichas": 4634,
+      "municipios": 5,
+      "competencias": [
+        "2024-06",
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "SC",
+      "fichas": 3562,
+      "municipios": 19,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "uf": "RR",
+      "fichas": 1106,
+      "municipios": 1,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "uf": "ES",
+      "fichas": 985,
+      "municipios": 7,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "RN",
+      "fichas": 442,
+      "municipios": 2,
+      "competencias": [
+        "2025-09",
+        "2025-11",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "uf": "AL",
+      "fichas": 210,
+      "municipios": 1,
+      "competencias": [
+        "2025-10",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "uf": "BA",
+      "fichas": 118,
+      "municipios": 1,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "uf": "PA",
+      "fichas": 1,
+      "municipios": 1,
+      "competencias": [
+        "2024-07"
+      ]
+    }
+  ],
+  "por_municipio": [
+    {
+      "ibge": "354870",
+      "municipio": "SÃO BERNARDO DO CAMPO",
+      "uf": "SP",
+      "fichas": 107027,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "250750",
+      "municipio": "JOÃO PESSOA",
+      "uf": "PB",
+      "fichas": 28241,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "350410",
+      "municipio": "ATIBAIA",
+      "uf": "SP",
+      "fichas": 17237,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "354340",
+      "municipio": "RIBEIRÃO PRETO",
+      "uf": "SP",
+      "fichas": 16015,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "431720",
+      "municipio": "SANTA ROSA",
+      "uf": "RS",
+      "fichas": 14982,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "410765",
+      "municipio": "FAZENDA RIO GRANDE",
+      "uf": "PR",
+      "fichas": 14457,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "ibge": "510263",
+      "municipio": "CAMPO NOVO DO PARECIS",
+      "uf": "MT",
+      "fichas": 13460,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "330630",
+      "municipio": "VOLTA REDONDA",
+      "uf": "RJ",
+      "fichas": 11953,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "431680",
+      "municipio": "SANTA CRUZ DO SUL",
+      "uf": "RS",
+      "fichas": 9697,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "431750",
+      "municipio": "SANTO ÂNGELO",
+      "uf": "RS",
+      "fichas": 7343,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "521040",
+      "municipio": "ITABERAÍ",
+      "uf": "GO",
+      "fichas": 6833,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "ibge": "352260",
+      "municipio": "ITAPIRA",
+      "uf": "SP",
+      "fichas": 6409,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "ibge": "410420",
+      "municipio": "CAMPO LARGO",
+      "uf": "PR",
+      "fichas": 5621,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "500740",
+      "municipio": "RIO VERDE DE MATO GROSSO",
+      "uf": "MS",
+      "fichas": 5348,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "ibge": "350590",
+      "municipio": "BATATAIS",
+      "uf": "SP",
+      "fichas": 4924,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "410180",
+      "municipio": "ARAUCÁRIA",
+      "uf": "PR",
+      "fichas": 4219,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "313940",
+      "municipio": "MANHUAÇU",
+      "uf": "MG",
+      "fichas": 3885,
+      "competencias": [
+        "2025-09",
+        "2025-11",
+        "2025-12"
+      ]
+    },
+    {
+      "ibge": "280480",
+      "municipio": "NOSSA SENHORA DO SOCORRO",
+      "uf": "SE",
+      "fichas": 3723,
+      "competencias": [
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "410640",
+      "municipio": "CORNÉLIO PROCÓPIO",
+      "uf": "PR",
+      "fichas": 3685,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "261485",
+      "municipio": "TAMANDARÉ",
+      "uf": "PE",
+      "fichas": 2976,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "ibge": "431020",
+      "municipio": "IJUÍ",
+      "uf": "RS",
+      "fichas": 2939,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "314810",
+      "municipio": "PATROCÍNIO",
+      "uf": "MG",
+      "fichas": 2865,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "421480",
+      "municipio": "RIO DO SUL",
+      "uf": "SC",
+      "fichas": 2761,
+      "competencias": [
+        "2025-09",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "500630",
+      "municipio": "PARANAÍBA",
+      "uf": "MS",
+      "fichas": 2643,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "355650",
+      "municipio": "VÁRZEA PAULISTA",
+      "uf": "SP",
+      "fichas": 2562,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "330550",
+      "municipio": "SAQUAREMA",
+      "uf": "RJ",
+      "fichas": 2405,
+      "competencias": [
+        "2025-09",
+        "2025-11",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "ibge": "431890",
+      "municipio": "SÃO LUIZ GONZAGA",
+      "uf": "RS",
+      "fichas": 2402,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "316940",
+      "municipio": "TRÊS PONTAS",
+      "uf": "MG",
+      "fichas": 1934,
+      "competencias": [
+        "2025-09"
+      ]
+    },
+    {
+      "ibge": "316930",
+      "municipio": "TRÊS CORAÇÕES",
+      "uf": "MG",
+      "fichas": 1934,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "311430",
+      "municipio": "CARMO DO PARANAÍBA",
+      "uf": "MG",
+      "fichas": 1855,
+      "competencias": [
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "315720",
+      "municipio": "SANTA BÁRBARA",
+      "uf": "MG",
+      "fichas": 1811,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "260480",
+      "municipio": "CORTÊS",
+      "uf": "PE",
+      "fichas": 1588,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "311940",
+      "municipio": "CORONEL FABRICIANO",
+      "uf": "MG",
+      "fichas": 1585,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "330170",
+      "municipio": "DUQUE DE CAXIAS",
+      "uf": "RJ",
+      "fichas": 1470,
+      "competencias": [
+        "2025-11",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "510622",
+      "municipio": "NOVA MUTUM",
+      "uf": "MT",
+      "fichas": 1293,
+      "competencias": [
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "411430",
+      "municipio": "MANDIRITUBA",
+      "uf": "PR",
+      "fichas": 1292,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "280280",
+      "municipio": "INDIAROBA",
+      "uf": "SE",
+      "fichas": 1263,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "280680",
+      "municipio": "SÃO DOMINGOS",
+      "uf": "SE",
+      "fichas": 1206,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "354670",
+      "municipio": "SANTA GERTRUDES",
+      "uf": "SP",
+      "fichas": 1204,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "520540",
+      "municipio": "CERES",
+      "uf": "GO",
+      "fichas": 1161,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "432150",
+      "municipio": "TORRES",
+      "uf": "RS",
+      "fichas": 1124,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "352530",
+      "municipio": "JAÚ",
+      "uf": "SP",
+      "fichas": 1123,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "140010",
+      "municipio": "BOA VISTA",
+      "uf": "RR",
+      "fichas": 1106,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "ibge": "431810",
+      "municipio": "SÃO FRANCISCO DE ASSIS",
+      "uf": "RS",
+      "fichas": 1090,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "330185",
+      "municipio": "GUAPIMIRIM",
+      "uf": "RJ",
+      "fichas": 1025,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "312670",
+      "municipio": "FRANCISCO SÁ",
+      "uf": "MG",
+      "fichas": 964,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "355640",
+      "municipio": "VARGEM GRANDE DO SUL",
+      "uf": "SP",
+      "fichas": 952,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "314930",
+      "municipio": "PEDRO LEOPOLDO",
+      "uf": "MG",
+      "fichas": 945,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "351410",
+      "municipio": "DOIS CÓRREGOS",
+      "uf": "SP",
+      "fichas": 929,
+      "competencias": [
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "431390",
+      "municipio": "PANAMBI",
+      "uf": "RS",
+      "fichas": 910,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "ibge": "500780",
+      "municipio": "SELVÍRIA",
+      "uf": "MS",
+      "fichas": 846,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "430120",
+      "municipio": "ARROIO DO TIGRE",
+      "uf": "RS",
+      "fichas": 840,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "410150",
+      "municipio": "ARAPONGAS",
+      "uf": "PR",
+      "fichas": 806,
+      "competencias": [
+        "2025-09",
+        "2026-01"
+      ]
+    },
+    {
+      "ibge": "351870",
+      "municipio": "GUARUJÁ",
+      "uf": "SP",
+      "fichas": 778,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "280020",
+      "municipio": "AQUIDABÃ",
+      "uf": "SE",
+      "fichas": 775,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12"
+      ]
+    },
+    {
+      "ibge": "410600",
+      "municipio": "CONGONHINHAS",
+      "uf": "PR",
+      "fichas": 774,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "316800",
+      "municipio": "TAIOBEIRAS",
+      "uf": "MG",
+      "fichas": 745,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "315120",
+      "municipio": "PIRAPORA",
+      "uf": "MG",
+      "fichas": 735,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "330025",
+      "municipio": "ARRAIAL DO CABO",
+      "uf": "RJ",
+      "fichas": 671,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-12"
+      ]
+    },
+    {
+      "ibge": "410580",
+      "municipio": "COLOMBO",
+      "uf": "PR",
+      "fichas": 670,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12"
+      ]
+    },
+    {
+      "ibge": "330227",
+      "municipio": "JAPERI",
+      "uf": "RJ",
+      "fichas": 669,
+      "competencias": [
+        "2025-09"
+      ]
+    },
+    {
+      "ibge": "310600",
+      "municipio": "BELA VISTA DE MINAS",
+      "uf": "MG",
+      "fichas": 651,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "330500",
+      "municipio": "SÃO JOÃO DA BARRA",
+      "uf": "RJ",
+      "fichas": 648,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12"
+      ]
+    },
+    {
+      "ibge": "310740",
+      "municipio": "BOM DESPACHO",
+      "uf": "MG",
+      "fichas": 647,
+      "competencias": [
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "353475",
+      "municipio": "OUROESTE",
+      "uf": "SP",
+      "fichas": 630,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12"
+      ]
+    },
+    {
+      "ibge": "500295",
+      "municipio": "CHAPADÃO DO SUL",
+      "uf": "MS",
+      "fichas": 627,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "280340",
+      "municipio": "JAPOATÃ",
+      "uf": "SE",
+      "fichas": 597,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "351490",
+      "municipio": "ELIAS FAUSTO",
+      "uf": "SP",
+      "fichas": 579,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "ibge": "352044",
+      "municipio": "ILHA SOLTEIRA",
+      "uf": "SP",
+      "fichas": 568,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "320450",
+      "municipio": "SANTA LEOPOLDINA",
+      "uf": "ES",
+      "fichas": 558,
+      "competencias": [
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "430520",
+      "municipio": "CERRO LARGO",
+      "uf": "RS",
+      "fichas": 550,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "314200",
+      "municipio": "MIRABELA",
+      "uf": "MG",
+      "fichas": 529,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "430693",
+      "municipio": "ENTRE-IJUÍS",
+      "uf": "RS",
+      "fichas": 485,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "410520",
+      "municipio": "CERRO AZUL",
+      "uf": "PR",
+      "fichas": 472,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "351890",
+      "municipio": "GUZOLÂNDIA",
+      "uf": "SP",
+      "fichas": 467,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "412230",
+      "municipio": "RIO NEGRO",
+      "uf": "PR",
+      "fichas": 463,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "313620",
+      "municipio": "JOÃO MONLEVADE",
+      "uf": "MG",
+      "fichas": 460,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "355710",
+      "municipio": "VOTUPORANGA",
+      "uf": "SP",
+      "fichas": 454,
+      "competencias": [
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "320080",
+      "municipio": "BAIXO GUANDU",
+      "uf": "ES",
+      "fichas": 406,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "314015",
+      "municipio": "MÁRIO CAMPOS",
+      "uf": "MG",
+      "fichas": 405,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "412270",
+      "municipio": "SABÁUDIA",
+      "uf": "PR",
+      "fichas": 390,
+      "competencias": [
+        "2025-09",
+        "2025-11",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "411460",
+      "municipio": "MARECHAL CÂNDIDO RONDON",
+      "uf": "PR",
+      "fichas": 378,
+      "competencias": [
+        "2025-09",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "355400",
+      "municipio": "TATUÍ",
+      "uf": "SP",
+      "fichas": 372,
+      "competencias": [
+        "2025-09"
+      ]
+    },
+    {
+      "ibge": "280200",
+      "municipio": "DIVINA PASTORA",
+      "uf": "SE",
+      "fichas": 363,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "350970",
+      "municipio": "CAMPOS DO JORDÃO",
+      "uf": "SP",
+      "fichas": 356,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "312870",
+      "municipio": "GUAXUPÉ",
+      "uf": "MG",
+      "fichas": 340,
+      "competencias": [
+        "2025-09"
+      ]
+    },
+    {
+      "ibge": "430600",
+      "municipio": "CRISSIUMAL",
+      "uf": "RS",
+      "fichas": 336,
+      "competencias": [
+        "2025-10",
+        "2025-11",
+        "2025-12"
+      ]
+    },
+    {
+      "ibge": "316294",
+      "municipio": "SÃO JOSÉ DA BARRA",
+      "uf": "MG",
+      "fichas": 324,
+      "competencias": [
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "330415",
+      "municipio": "QUISSAMÃ",
+      "uf": "RJ",
+      "fichas": 313,
+      "competencias": [
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "421565",
+      "municipio": "SANTA ROSA DO SUL",
+      "uf": "SC",
+      "fichas": 309,
+      "competencias": [
+        "2025-09"
+      ]
+    },
+    {
+      "ibge": "241335",
+      "municipio": "SERRA DO MEL",
+      "uf": "RN",
+      "fichas": 302,
+      "competencias": [
+        "2025-09"
+      ]
+    },
+    {
+      "ibge": "420005",
+      "municipio": "ABDON BATISTA",
+      "uf": "SC",
+      "fichas": 297,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02"
+      ]
+    },
+    {
+      "ibge": "280350",
+      "municipio": "LAGARTO",
+      "uf": "SE",
+      "fichas": 288,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "314460",
+      "municipio": "NEPOMUCENO",
+      "uf": "MG",
+      "fichas": 254,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "330140",
+      "municipio": "CONCEIÇÃO DE MACABU",
+      "uf": "RJ",
+      "fichas": 244,
+      "competencias": [
+        "2025-09",
+        "2025-10"
+      ]
+    },
+    {
+      "ibge": "500627",
+      "municipio": "PARAÍSO DAS ÁGUAS",
+      "uf": "MS",
+      "fichas": 243,
+      "competencias": [
+        "2025-09",
+        "2025-10",
+        "2025-11"
+      ]
+    },
+    {
+      "ibge": "412740",
+      "municipio": "TERRA ROXA",
+      "uf": "PR",
+      "fichas": 220,
+      "competencias": [
+        "2025-09",
+        "2025-12",
+        "2026-01"
+      ]
+    },
+    {
+      "ibge": "313630",
+      "municipio": "JOÃO PINHEIRO",
+      "uf": "MG",
+      "fichas": 216,
+      "competencias": [
+        "2025-09"
+      ]
+    },
+    {
+      "ibge": "270860",
+      "municipio": "SÃO MIGUEL DOS CAMPOS",
+      "uf": "AL",
+      "fichas": 210,
+      "competencias": [
+        "2025-10",
+        "2026-02",
+        "2026-03"
+      ]
+    },
+    {
+      "ibge": "430640",
+      "municipio": "DOIS IRMÃOS",
+      "uf": "RS",
+      "fichas": 199,
+      "competencias": [
+        "2025-10",
+        "2026-01",
+        "2026-02"
+      ]
+    }
+  ]
+}

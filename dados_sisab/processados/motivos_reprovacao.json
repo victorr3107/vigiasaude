@@ -1,0 +1,280 @@
+{
+  "total_reprovado": 50601749,
+  "por_motivo": [
+    {
+      "motivo": "CNES",
+      "fichas": 514989,
+      "pct": 1.02
+    },
+    {
+      "motivo": "PROF",
+      "fichas": 46715326,
+      "pct": 92.32
+    },
+    {
+      "motivo": "INE",
+      "fichas": 1670472,
+      "pct": 3.3
+    },
+    {
+      "motivo": "CBO",
+      "fichas": 557405,
+      "pct": 1.1
+    },
+    {
+      "motivo": "MÚLTIPLOS",
+      "fichas": 1143557,
+      "pct": 2.26
+    },
+    {
+      "motivo": "OUTROS",
+      "fichas": 0,
+      "pct": 0.0
+    }
+  ],
+  "evolucao_temporal": [
+    {
+      "competencia": "2024-01",
+      "CNES": 23456,
+      "PROF": 550405,
+      "INE": 35990,
+      "CBO": 28160,
+      "MÚLTIPLOS": 25731,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2024-02",
+      "CNES": 15674,
+      "PROF": 637227,
+      "INE": 0,
+      "CBO": 20955,
+      "MÚLTIPLOS": 18271,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2024-03",
+      "CNES": 27172,
+      "PROF": 634114,
+      "INE": 58143,
+      "CBO": 21964,
+      "MÚLTIPLOS": 27990,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2024-04",
+      "CNES": 29275,
+      "PROF": 669197,
+      "INE": 150912,
+      "CBO": 19281,
+      "MÚLTIPLOS": 32195,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2024-05",
+      "CNES": 23734,
+      "PROF": 702499,
+      "INE": 74489,
+      "CBO": 17993,
+      "MÚLTIPLOS": 29804,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2024-06",
+      "CNES": 9227,
+      "PROF": 459495,
+      "INE": 1,
+      "CBO": 39390,
+      "MÚLTIPLOS": 32824,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2024-07",
+      "CNES": 17339,
+      "PROF": 1000965,
+      "INE": 62252,
+      "CBO": 19184,
+      "MÚLTIPLOS": 29397,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2024-08",
+      "CNES": 13654,
+      "PROF": 2166026,
+      "INE": 42123,
+      "CBO": 26571,
+      "MÚLTIPLOS": 36791,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2024-09",
+      "CNES": 19944,
+      "PROF": 2374612,
+      "INE": 92813,
+      "CBO": 25110,
+      "MÚLTIPLOS": 43087,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2024-10",
+      "CNES": 27507,
+      "PROF": 2362588,
+      "INE": 47823,
+      "CBO": 18173,
+      "MÚLTIPLOS": 48979,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2024-11",
+      "CNES": 13976,
+      "PROF": 2034955,
+      "INE": 58544,
+      "CBO": 14080,
+      "MÚLTIPLOS": 34047,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2024-12",
+      "CNES": 11973,
+      "PROF": 1534031,
+      "INE": 52327,
+      "CBO": 11085,
+      "MÚLTIPLOS": 37473,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-01",
+      "CNES": 16664,
+      "PROF": 1795892,
+      "INE": 68923,
+      "CBO": 13268,
+      "MÚLTIPLOS": 57787,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-02",
+      "CNES": 30838,
+      "PROF": 2003000,
+      "INE": 50751,
+      "CBO": 16923,
+      "MÚLTIPLOS": 63315,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-03",
+      "CNES": 22199,
+      "PROF": 1859352,
+      "INE": 68790,
+      "CBO": 18527,
+      "MÚLTIPLOS": 57261,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-04",
+      "CNES": 20403,
+      "PROF": 2341054,
+      "INE": 103048,
+      "CBO": 21903,
+      "MÚLTIPLOS": 50333,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-05",
+      "CNES": 23171,
+      "PROF": 2478653,
+      "INE": 105518,
+      "CBO": 19204,
+      "MÚLTIPLOS": 48966,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-06",
+      "CNES": 15781,
+      "PROF": 2173434,
+      "INE": 60351,
+      "CBO": 20633,
+      "MÚLTIPLOS": 44882,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-07",
+      "CNES": 19573,
+      "PROF": 2677005,
+      "INE": 98927,
+      "CBO": 21434,
+      "MÚLTIPLOS": 40999,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-08",
+      "CNES": 21639,
+      "PROF": 2496240,
+      "INE": 65170,
+      "CBO": 19280,
+      "MÚLTIPLOS": 38305,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-09",
+      "CNES": 37054,
+      "PROF": 2676918,
+      "INE": 73656,
+      "CBO": 21478,
+      "MÚLTIPLOS": 42242,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-10",
+      "CNES": 21868,
+      "PROF": 2201576,
+      "INE": 45046,
+      "CBO": 24279,
+      "MÚLTIPLOS": 33819,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-11",
+      "CNES": 22641,
+      "PROF": 1798528,
+      "INE": 44484,
+      "CBO": 21816,
+      "MÚLTIPLOS": 27491,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2025-12",
+      "CNES": 3447,
+      "PROF": 1493751,
+      "INE": 88273,
+      "CBO": 20289,
+      "MÚLTIPLOS": 160402,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2026-01",
+      "CNES": 6222,
+      "PROF": 1996089,
+      "INE": 65034,
+      "CBO": 21694,
+      "MÚLTIPLOS": 32916,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2026-02",
+      "CNES": 19297,
+      "PROF": 2918671,
+      "INE": 57083,
+      "CBO": 23421,
+      "MÚLTIPLOS": 46593,
+      "OUTROS": 0
+    },
+    {
+      "competencia": "2026-03",
+      "CNES": 1261,
+      "PROF": 679049,
+      "INE": 1,
+      "CBO": 11310,
+      "MÚLTIPLOS": 1657,
+      "OUTROS": 0
+    }
+  ]
+}

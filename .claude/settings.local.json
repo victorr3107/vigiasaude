@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \":*)",
+      "Bash(python -c \":*)",
+      "Read(//e/Projeto Gestão de Dados/**)",
+      "Bash(python scripts/processar_sisab.py --verbose)",
+      "Bash(python scripts/processar_sisab.py)"
+    ]
+  }
+}

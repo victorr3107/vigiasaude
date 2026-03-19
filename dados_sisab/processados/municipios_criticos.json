@@ -1,0 +1,1802 @@
+[
+  {
+    "ibge": "355030",
+    "municipio": "SÃO PAULO",
+    "uf": "SP",
+    "total": 154727201,
+    "reprovado": 477941,
+    "taxa_reprovacao": 0.31,
+    "taxa_aprovacao": 99.69,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 286347,
+      "INE": 35703,
+      "CBO": 1792,
+      "MÚLTIPLOS": 154099,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "260680",
+    "municipio": "IGARASSU",
+    "uf": "PE",
+    "total": 3659077,
+    "reprovado": 419879,
+    "taxa_reprovacao": 11.67,
+    "taxa_aprovacao": 88.33,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 419592,
+      "INE": 124,
+      "CBO": 2,
+      "MÚLTIPLOS": 161,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "353870",
+    "municipio": "PIRACICABA",
+    "uf": "SP",
+    "total": 4836017,
+    "reprovado": 325351,
+    "taxa_reprovacao": 6.9,
+    "taxa_aprovacao": 93.1,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 3,
+      "PROF": 325294,
+      "INE": 36,
+      "CBO": 0,
+      "MÚLTIPLOS": 18,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "261110",
+    "municipio": "PETROLINA",
+    "uf": "PE",
+    "total": 7408736,
+    "reprovado": 293258,
+    "taxa_reprovacao": 4.13,
+    "taxa_aprovacao": 95.87,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 5443,
+      "PROF": 285343,
+      "INE": 2368,
+      "CBO": 0,
+      "MÚLTIPLOS": 104,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "130260",
+    "municipio": "MANAUS",
+    "uf": "AM",
+    "total": 28743109,
+    "reprovado": 290710,
+    "taxa_reprovacao": 1.09,
+    "taxa_aprovacao": 98.91,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 79406,
+      "PROF": 206825,
+      "INE": 807,
+      "CBO": 20,
+      "MÚLTIPLOS": 3652,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "312090",
+    "municipio": "CURVELO",
+    "uf": "MG",
+    "total": 2003459,
+    "reprovado": 259347,
+    "taxa_reprovacao": 13.22,
+    "taxa_aprovacao": 86.78,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 259025,
+      "INE": 284,
+      "CBO": 0,
+      "MÚLTIPLOS": 38,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "330455",
+    "municipio": "RIO DE JANEIRO",
+    "uf": "RJ",
+    "total": 96194923,
+    "reprovado": 259252,
+    "taxa_reprovacao": 0.28,
+    "taxa_aprovacao": 99.72,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 1742,
+      "PROF": 168366,
+      "INE": 5708,
+      "CBO": 0,
+      "MÚLTIPLOS": 83436,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "290070",
+    "municipio": "ALAGOINHAS",
+    "uf": "BA",
+    "total": 3946276,
+    "reprovado": 243378,
+    "taxa_reprovacao": 6.35,
+    "taxa_aprovacao": 93.65,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 243275,
+      "INE": 73,
+      "CBO": 0,
+      "MÚLTIPLOS": 30,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "316720",
+    "municipio": "SETE LAGOAS",
+    "uf": "MG",
+    "total": 5680867,
+    "reprovado": 238555,
+    "taxa_reprovacao": 4.26,
+    "taxa_aprovacao": 95.74,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 8936,
+      "PROF": 225717,
+      "INE": 3147,
+      "CBO": 0,
+      "MÚLTIPLOS": 755,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "315250",
+    "municipio": "POUSO ALEGRE",
+    "uf": "MG",
+    "total": 2389031,
+    "reprovado": 238204,
+    "taxa_reprovacao": 9.97,
+    "taxa_aprovacao": 90.03,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 238195,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 9,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "354890",
+    "municipio": "SÃO CARLOS",
+    "uf": "SP",
+    "total": 3532385,
+    "reprovado": 238162,
+    "taxa_reprovacao": 7.13,
+    "taxa_aprovacao": 92.87,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 154033,
+      "INE": 0,
+      "CBO": 77742,
+      "MÚLTIPLOS": 6387,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "352900",
+    "municipio": "MARÍLIA",
+    "uf": "SP",
+    "total": 4664063,
+    "reprovado": 231409,
+    "taxa_reprovacao": 5.1,
+    "taxa_aprovacao": 94.9,
+    "principal_motivo": "CBO",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 90448,
+      "INE": 0,
+      "CBO": 113144,
+      "MÚLTIPLOS": 27817,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "150080",
+    "municipio": "ANANINDEUA",
+    "uf": "PA",
+    "total": 9850063,
+    "reprovado": 228176,
+    "taxa_reprovacao": 2.35,
+    "taxa_aprovacao": 97.65,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 73,
+      "PROF": 204104,
+      "INE": 23799,
+      "CBO": 102,
+      "MÚLTIPLOS": 98,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "261160",
+    "municipio": "RECIFE",
+    "uf": "PE",
+    "total": 29181725,
+    "reprovado": 225415,
+    "taxa_reprovacao": 0.79,
+    "taxa_aprovacao": 99.21,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 2757,
+      "PROF": 203716,
+      "INE": 16195,
+      "CBO": 1805,
+      "MÚLTIPLOS": 942,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "320320",
+    "municipio": "LINHARES",
+    "uf": "ES",
+    "total": 6404746,
+    "reprovado": 223534,
+    "taxa_reprovacao": 3.56,
+    "taxa_aprovacao": 96.44,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 223382,
+      "INE": 147,
+      "CBO": 0,
+      "MÚLTIPLOS": 5,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "260600",
+    "municipio": "GARANHUNS",
+    "uf": "PE",
+    "total": 4877932,
+    "reprovado": 212623,
+    "taxa_reprovacao": 4.48,
+    "taxa_aprovacao": 95.52,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 212486,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 137,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "150613",
+    "municipio": "REDENÇÃO",
+    "uf": "PA",
+    "total": 3197839,
+    "reprovado": 211973,
+    "taxa_reprovacao": 6.73,
+    "taxa_aprovacao": 93.27,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 211961,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 12,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "315780",
+    "municipio": "SANTA LUZIA",
+    "uf": "MG",
+    "total": 4029384,
+    "reprovado": 205590,
+    "taxa_reprovacao": 5.34,
+    "taxa_aprovacao": 94.66,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 205579,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 11,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "172100",
+    "municipio": "PALMAS",
+    "uf": "TO",
+    "total": 5511199,
+    "reprovado": 200838,
+    "taxa_reprovacao": 3.66,
+    "taxa_aprovacao": 96.34,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 199694,
+      "INE": 1092,
+      "CBO": 0,
+      "MÚLTIPLOS": 52,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "311340",
+    "municipio": "CARATINGA",
+    "uf": "MG",
+    "total": 2055724,
+    "reprovado": 200473,
+    "taxa_reprovacao": 10.02,
+    "taxa_aprovacao": 89.98,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 2,
+      "PROF": 200221,
+      "INE": 217,
+      "CBO": 0,
+      "MÚLTIPLOS": 33,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "314330",
+    "municipio": "MONTES CLAROS",
+    "uf": "MG",
+    "total": 12690362,
+    "reprovado": 197859,
+    "taxa_reprovacao": 1.57,
+    "taxa_aprovacao": 98.43,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 9216,
+      "PROF": 187275,
+      "INE": 1320,
+      "CBO": 0,
+      "MÚLTIPLOS": 48,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "210232",
+    "municipio": "BURITICUPU",
+    "uf": "MA",
+    "total": 2207869,
+    "reprovado": 172215,
+    "taxa_reprovacao": 8.01,
+    "taxa_aprovacao": 91.99,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 7,
+      "PROF": 172064,
+      "INE": 0,
+      "CBO": 2,
+      "MÚLTIPLOS": 142,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "315180",
+    "municipio": "POÇOS DE CALDAS",
+    "uf": "MG",
+    "total": 4601169,
+    "reprovado": 167682,
+    "taxa_reprovacao": 3.79,
+    "taxa_aprovacao": 96.21,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 5,
+      "PROF": 167310,
+      "INE": 0,
+      "CBO": 320,
+      "MÚLTIPLOS": 47,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "150170",
+    "municipio": "BRAGANÇA",
+    "uf": "PA",
+    "total": 6901634,
+    "reprovado": 151509,
+    "taxa_reprovacao": 2.24,
+    "taxa_aprovacao": 97.76,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 12,
+      "PROF": 151486,
+      "INE": 0,
+      "CBO": 4,
+      "MÚLTIPLOS": 7,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "220770",
+    "municipio": "PARNAÍBA",
+    "uf": "PI",
+    "total": 5742670,
+    "reprovado": 148831,
+    "taxa_reprovacao": 2.64,
+    "taxa_aprovacao": 97.36,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 146821,
+      "INE": 1404,
+      "CBO": 0,
+      "MÚLTIPLOS": 606,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "350950",
+    "municipio": "CAMPINAS",
+    "uf": "SP",
+    "total": 14718580,
+    "reprovado": 147596,
+    "taxa_reprovacao": 1.07,
+    "taxa_aprovacao": 98.93,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 146093,
+      "INE": 1287,
+      "CBO": 40,
+      "MÚLTIPLOS": 176,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "521975",
+    "municipio": "SANTO ANTÔNIO DO DESCOBERTO",
+    "uf": "GO",
+    "total": 1140857,
+    "reprovado": 145479,
+    "taxa_reprovacao": 13.43,
+    "taxa_aprovacao": 86.57,
+    "principal_motivo": "CNES",
+    "motivos": {
+      "CNES": 99506,
+      "PROF": 23177,
+      "INE": 0,
+      "CBO": 4,
+      "MÚLTIPLOS": 22792,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "261070",
+    "municipio": "PAULISTA",
+    "uf": "PE",
+    "total": 4737640,
+    "reprovado": 145049,
+    "taxa_reprovacao": 3.1,
+    "taxa_aprovacao": 96.9,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 680,
+      "PROF": 143803,
+      "INE": 74,
+      "CBO": 0,
+      "MÚLTIPLOS": 492,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "320500",
+    "municipio": "SERRA",
+    "uf": "ES",
+    "total": 6567354,
+    "reprovado": 140835,
+    "taxa_reprovacao": 2.15,
+    "taxa_aprovacao": 97.85,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 135260,
+      "INE": 5456,
+      "CBO": 0,
+      "MÚLTIPLOS": 119,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "230440",
+    "municipio": "FORTALEZA",
+    "uf": "CE",
+    "total": 27135341,
+    "reprovado": 139572,
+    "taxa_reprovacao": 0.54,
+    "taxa_aprovacao": 99.46,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 136991,
+      "INE": 2454,
+      "CBO": 0,
+      "MÚLTIPLOS": 127,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "250030",
+    "municipio": "ALAGOA GRANDE",
+    "uf": "PB",
+    "total": 1495809,
+    "reprovado": 136830,
+    "taxa_reprovacao": 9.27,
+    "taxa_aprovacao": 90.73,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 442,
+      "PROF": 136334,
+      "INE": 0,
+      "CBO": 54,
+      "MÚLTIPLOS": 0,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "320130",
+    "municipio": "CARIACICA",
+    "uf": "ES",
+    "total": 2085077,
+    "reprovado": 129499,
+    "taxa_reprovacao": 6.21,
+    "taxa_aprovacao": 93.79,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 7,
+      "PROF": 125748,
+      "INE": 3471,
+      "CBO": 0,
+      "MÚLTIPLOS": 273,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "421870",
+    "municipio": "TUBARÃO",
+    "uf": "SC",
+    "total": 3188624,
+    "reprovado": 126023,
+    "taxa_reprovacao": 4.02,
+    "taxa_aprovacao": 95.98,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 96600,
+      "INE": 196,
+      "CBO": 2902,
+      "MÚLTIPLOS": 26325,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "240810",
+    "municipio": "NATAL",
+    "uf": "RN",
+    "total": 6577921,
+    "reprovado": 125454,
+    "taxa_reprovacao": 2.02,
+    "taxa_aprovacao": 97.98,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 42,
+      "PROF": 115902,
+      "INE": 3108,
+      "CBO": 1412,
+      "MÚLTIPLOS": 4990,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "313940",
+    "municipio": "MANHUAÇU",
+    "uf": "MG",
+    "total": 2658759,
+    "reprovado": 124677,
+    "taxa_reprovacao": 4.77,
+    "taxa_aprovacao": 95.08,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 124212,
+      "INE": 465,
+      "CBO": 0,
+      "MÚLTIPLOS": 0,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "320120",
+    "municipio": "CACHOEIRO DE ITAPEMIRIM",
+    "uf": "ES",
+    "total": 3852508,
+    "reprovado": 120095,
+    "taxa_reprovacao": 3.12,
+    "taxa_aprovacao": 96.88,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 100,
+      "PROF": 111100,
+      "INE": 7701,
+      "CBO": 0,
+      "MÚLTIPLOS": 1194,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "230370",
+    "municipio": "CAUCAIA",
+    "uf": "CE",
+    "total": 6562929,
+    "reprovado": 119293,
+    "taxa_reprovacao": 1.92,
+    "taxa_aprovacao": 98.08,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 26,
+      "PROF": 119096,
+      "INE": 67,
+      "CBO": 0,
+      "MÚLTIPLOS": 104,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "320530",
+    "municipio": "VITÓRIA",
+    "uf": "ES",
+    "total": 11613675,
+    "reprovado": 117944,
+    "taxa_reprovacao": 1.02,
+    "taxa_aprovacao": 98.98,
+    "principal_motivo": "MÚLTIPLOS",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 35640,
+      "INE": 4794,
+      "CBO": 0,
+      "MÚLTIPLOS": 77510,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "320332",
+    "municipio": "MARATAÍZES",
+    "uf": "ES",
+    "total": 1462696,
+    "reprovado": 117659,
+    "taxa_reprovacao": 8.04,
+    "taxa_aprovacao": 91.96,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 116649,
+      "INE": 856,
+      "CBO": 42,
+      "MÚLTIPLOS": 112,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "500370",
+    "municipio": "DOURADOS",
+    "uf": "MS",
+    "total": 7912897,
+    "reprovado": 112774,
+    "taxa_reprovacao": 1.49,
+    "taxa_aprovacao": 98.51,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 76,
+      "PROF": 106576,
+      "INE": 5949,
+      "CBO": 58,
+      "MÚLTIPLOS": 115,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "310200",
+    "municipio": "ALTEROSA",
+    "uf": "MG",
+    "total": 729378,
+    "reprovado": 108506,
+    "taxa_reprovacao": 15.07,
+    "taxa_aprovacao": 84.93,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 107070,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 1436,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "291480",
+    "municipio": "ITABUNA",
+    "uf": "BA",
+    "total": 4885311,
+    "reprovado": 107416,
+    "taxa_reprovacao": 2.26,
+    "taxa_aprovacao": 97.74,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 107379,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 37,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "530010",
+    "municipio": "BRASÍLIA",
+    "uf": "DF",
+    "total": 31697303,
+    "reprovado": 106899,
+    "taxa_reprovacao": 0.34,
+    "taxa_aprovacao": 99.66,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 48,
+      "PROF": 101590,
+      "INE": 3455,
+      "CBO": 0,
+      "MÚLTIPLOS": 1806,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "431440",
+    "municipio": "PELOTAS",
+    "uf": "RS",
+    "total": 4672197,
+    "reprovado": 101080,
+    "taxa_reprovacao": 2.24,
+    "taxa_aprovacao": 97.76,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 96912,
+      "INE": 3951,
+      "CBO": 4,
+      "MÚLTIPLOS": 213,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "313240",
+    "municipio": "ITAJUBÁ",
+    "uf": "MG",
+    "total": 4216517,
+    "reprovado": 100698,
+    "taxa_reprovacao": 2.44,
+    "taxa_aprovacao": 97.56,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 93342,
+      "INE": 7308,
+      "CBO": 18,
+      "MÚLTIPLOS": 30,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "210960",
+    "municipio": "ROSÁRIO",
+    "uf": "MA",
+    "total": 1259977,
+    "reprovado": 100348,
+    "taxa_reprovacao": 8.02,
+    "taxa_aprovacao": 91.98,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 296,
+      "PROF": 97286,
+      "INE": 2727,
+      "CBO": 0,
+      "MÚLTIPLOS": 39,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "261390",
+    "municipio": "SERRA TALHADA",
+    "uf": "PE",
+    "total": 3562287,
+    "reprovado": 99968,
+    "taxa_reprovacao": 2.85,
+    "taxa_aprovacao": 97.15,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 99964,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 4,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "211220",
+    "municipio": "TIMON",
+    "uf": "MA",
+    "total": 4002037,
+    "reprovado": 98080,
+    "taxa_reprovacao": 2.51,
+    "taxa_aprovacao": 97.49,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 27,
+      "PROF": 97322,
+      "INE": 626,
+      "CBO": 0,
+      "MÚLTIPLOS": 105,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "430460",
+    "municipio": "CANOAS",
+    "uf": "RS",
+    "total": 5375474,
+    "reprovado": 97881,
+    "taxa_reprovacao": 1.9,
+    "taxa_aprovacao": 98.1,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 9,
+      "PROF": 86147,
+      "INE": 10499,
+      "CBO": 10,
+      "MÚLTIPLOS": 1216,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "431490",
+    "municipio": "PORTO ALEGRE",
+    "uf": "RS",
+    "total": 24412951,
+    "reprovado": 97722,
+    "taxa_reprovacao": 0.42,
+    "taxa_aprovacao": 99.58,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 248,
+      "PROF": 89218,
+      "INE": 595,
+      "CBO": 2094,
+      "MÚLTIPLOS": 5567,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "250180",
+    "municipio": "BAYEUX",
+    "uf": "PB",
+    "total": 2444398,
+    "reprovado": 97297,
+    "taxa_reprovacao": 4.06,
+    "taxa_aprovacao": 95.94,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 90252,
+      "INE": 7038,
+      "CBO": 0,
+      "MÚLTIPLOS": 7,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "354870",
+    "municipio": "SÃO BERNARDO DO CAMPO",
+    "uf": "SP",
+    "total": 12718432,
+    "reprovado": 95259,
+    "taxa_reprovacao": 0.77,
+    "taxa_aprovacao": 98.36,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 94042,
+      "INE": 1186,
+      "CBO": 0,
+      "MÚLTIPLOS": 31,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "316860",
+    "municipio": "TEÓFILO OTONI",
+    "uf": "MG",
+    "total": 5165063,
+    "reprovado": 95035,
+    "taxa_reprovacao": 1.89,
+    "taxa_aprovacao": 98.11,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 94417,
+      "INE": 172,
+      "CBO": 220,
+      "MÚLTIPLOS": 226,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "291750",
+    "municipio": "JACOBINA",
+    "uf": "BA",
+    "total": 2394699,
+    "reprovado": 93722,
+    "taxa_reprovacao": 4.02,
+    "taxa_aprovacao": 95.98,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 87255,
+      "INE": 6449,
+      "CBO": 0,
+      "MÚLTIPLOS": 18,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "261220",
+    "municipio": "SALGUEIRO",
+    "uf": "PE",
+    "total": 2408471,
+    "reprovado": 92709,
+    "taxa_reprovacao": 3.96,
+    "taxa_aprovacao": 96.04,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 92060,
+      "INE": 42,
+      "CBO": 422,
+      "MÚLTIPLOS": 185,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "330250",
+    "municipio": "MAGÉ",
+    "uf": "RJ",
+    "total": 7964193,
+    "reprovado": 92385,
+    "taxa_reprovacao": 1.18,
+    "taxa_aprovacao": 98.82,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 92378,
+      "INE": 0,
+      "CBO": 4,
+      "MÚLTIPLOS": 3,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "291800",
+    "municipio": "JEQUIÉ",
+    "uf": "BA",
+    "total": 2747622,
+    "reprovado": 90044,
+    "taxa_reprovacao": 3.34,
+    "taxa_aprovacao": 96.66,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 85453,
+      "INE": 3922,
+      "CBO": 2,
+      "MÚLTIPLOS": 667,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "293330",
+    "municipio": "VITÓRIA DA CONQUISTA",
+    "uf": "BA",
+    "total": 6399359,
+    "reprovado": 89225,
+    "taxa_reprovacao": 1.47,
+    "taxa_aprovacao": 98.53,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 85572,
+      "INE": 3637,
+      "CBO": 0,
+      "MÚLTIPLOS": 16,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "314290",
+    "municipio": "MONTE AZUL",
+    "uf": "MG",
+    "total": 761244,
+    "reprovado": 86655,
+    "taxa_reprovacao": 11.63,
+    "taxa_aprovacao": 88.37,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 1,
+      "PROF": 86010,
+      "INE": 536,
+      "CBO": 0,
+      "MÚLTIPLOS": 108,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "317120",
+    "municipio": "VESPASIANO",
+    "uf": "MG",
+    "total": 1177667,
+    "reprovado": 86165,
+    "taxa_reprovacao": 7.54,
+    "taxa_aprovacao": 92.46,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 86159,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 6,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "330340",
+    "municipio": "NOVA FRIBURGO",
+    "uf": "RJ",
+    "total": 1712486,
+    "reprovado": 84680,
+    "taxa_reprovacao": 5.07,
+    "taxa_aprovacao": 94.93,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 84680,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 0,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "230850",
+    "municipio": "MOMBAÇA",
+    "uf": "CE",
+    "total": 1911907,
+    "reprovado": 84153,
+    "taxa_reprovacao": 4.49,
+    "taxa_aprovacao": 95.51,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 84145,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 8,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "500400",
+    "municipio": "GLÓRIA DE DOURADOS",
+    "uf": "MS",
+    "total": 598766,
+    "reprovado": 84103,
+    "taxa_reprovacao": 14.3,
+    "taxa_aprovacao": 85.7,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 3678,
+      "PROF": 80331,
+      "INE": 0,
+      "CBO": 2,
+      "MÚLTIPLOS": 92,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "311860",
+    "municipio": "CONTAGEM",
+    "uf": "MG",
+    "total": 11120098,
+    "reprovado": 84041,
+    "taxa_reprovacao": 0.78,
+    "taxa_aprovacao": 99.22,
+    "principal_motivo": "CNES",
+    "motivos": {
+      "CNES": 39121,
+      "PROF": 19281,
+      "INE": 21590,
+      "CBO": 0,
+      "MÚLTIPLOS": 4049,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "260790",
+    "municipio": "JABOATÃO DOS GUARARAPES",
+    "uf": "PE",
+    "total": 6012725,
+    "reprovado": 83115,
+    "taxa_reprovacao": 1.45,
+    "taxa_aprovacao": 98.55,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 30,
+      "PROF": 80156,
+      "INE": 2193,
+      "CBO": 20,
+      "MÚLTIPLOS": 716,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "261640",
+    "municipio": "VITÓRIA DE SANTO ANTÃO",
+    "uf": "PE",
+    "total": 2911118,
+    "reprovado": 81806,
+    "taxa_reprovacao": 2.89,
+    "taxa_aprovacao": 97.11,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 117,
+      "PROF": 74128,
+      "INE": 3482,
+      "CBO": 2,
+      "MÚLTIPLOS": 4077,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "315120",
+    "municipio": "PIRAPORA",
+    "uf": "MG",
+    "total": 1736791,
+    "reprovado": 81126,
+    "taxa_reprovacao": 4.79,
+    "taxa_aprovacao": 95.16,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 81125,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 1,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "412750",
+    "municipio": "TIBAGI",
+    "uf": "PR",
+    "total": 701026,
+    "reprovado": 80487,
+    "taxa_reprovacao": 11.87,
+    "taxa_aprovacao": 88.13,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 72274,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 8213,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "313010",
+    "municipio": "IGARAPÉ",
+    "uf": "MG",
+    "total": 1031156,
+    "reprovado": 79116,
+    "taxa_reprovacao": 7.78,
+    "taxa_aprovacao": 92.22,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 79115,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 1,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "260400",
+    "municipio": "CARPINA",
+    "uf": "PE",
+    "total": 2673495,
+    "reprovado": 78851,
+    "taxa_reprovacao": 3.01,
+    "taxa_aprovacao": 96.99,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 60592,
+      "INE": 0,
+      "CBO": 18258,
+      "MÚLTIPLOS": 1,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "500270",
+    "municipio": "CAMPO GRANDE",
+    "uf": "MS",
+    "total": 17503536,
+    "reprovado": 78486,
+    "taxa_reprovacao": 0.47,
+    "taxa_aprovacao": 99.53,
+    "principal_motivo": "INE",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 30686,
+      "INE": 46748,
+      "CBO": 2,
+      "MÚLTIPLOS": 1050,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "420210",
+    "municipio": "BARRA VELHA",
+    "uf": "SC",
+    "total": 1608434,
+    "reprovado": 78305,
+    "taxa_reprovacao": 4.97,
+    "taxa_aprovacao": 95.03,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 78290,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 15,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "130190",
+    "municipio": "ITACOATIARA",
+    "uf": "AM",
+    "total": 5356132,
+    "reprovado": 78298,
+    "taxa_reprovacao": 1.46,
+    "taxa_aprovacao": 98.54,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 18,
+      "PROF": 77866,
+      "INE": 394,
+      "CBO": 0,
+      "MÚLTIPLOS": 20,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "312230",
+    "municipio": "DIVINÓPOLIS",
+    "uf": "MG",
+    "total": 5061773,
+    "reprovado": 77483,
+    "taxa_reprovacao": 1.59,
+    "taxa_aprovacao": 98.41,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 48,
+      "PROF": 77405,
+      "INE": 0,
+      "CBO": 10,
+      "MÚLTIPLOS": 20,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "313130",
+    "municipio": "IPATINGA",
+    "uf": "MG",
+    "total": 4082582,
+    "reprovado": 77423,
+    "taxa_reprovacao": 1.9,
+    "taxa_aprovacao": 98.1,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 70668,
+      "INE": 6740,
+      "CBO": 0,
+      "MÚLTIPLOS": 15,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "317020",
+    "municipio": "UBERLÂNDIA",
+    "uf": "MG",
+    "total": 15227416,
+    "reprovado": 76948,
+    "taxa_reprovacao": 0.51,
+    "taxa_aprovacao": 99.49,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 76223,
+      "INE": 676,
+      "CBO": 0,
+      "MÚLTIPLOS": 49,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "150680",
+    "municipio": "SANTARÉM",
+    "uf": "PA",
+    "total": 5591462,
+    "reprovado": 76078,
+    "taxa_reprovacao": 1.42,
+    "taxa_aprovacao": 98.58,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 76003,
+      "INE": 28,
+      "CBO": 0,
+      "MÚLTIPLOS": 47,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "260960",
+    "municipio": "OLINDA",
+    "uf": "PE",
+    "total": 2283986,
+    "reprovado": 75436,
+    "taxa_reprovacao": 3.52,
+    "taxa_aprovacao": 96.48,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 16,
+      "PROF": 73201,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 2219,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "521523",
+    "municipio": "NOVO GAMA",
+    "uf": "GO",
+    "total": 2838513,
+    "reprovado": 75370,
+    "taxa_reprovacao": 2.74,
+    "taxa_aprovacao": 97.26,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 50822,
+      "INE": 24337,
+      "CBO": 132,
+      "MÚLTIPLOS": 79,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "315600",
+    "municipio": "RIO VERMELHO",
+    "uf": "MG",
+    "total": 682981,
+    "reprovado": 75219,
+    "taxa_reprovacao": 11.2,
+    "taxa_aprovacao": 88.8,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 74406,
+      "INE": 84,
+      "CBO": 0,
+      "MÚLTIPLOS": 729,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "315015",
+    "municipio": "PIEDADE DE CARATINGA",
+    "uf": "MG",
+    "total": 663510,
+    "reprovado": 74347,
+    "taxa_reprovacao": 11.4,
+    "taxa_aprovacao": 88.6,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 74329,
+      "INE": 0,
+      "CBO": 18,
+      "MÚLTIPLOS": 0,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "251370",
+    "municipio": "SANTA RITA",
+    "uf": "PB",
+    "total": 3016938,
+    "reprovado": 73761,
+    "taxa_reprovacao": 2.51,
+    "taxa_aprovacao": 97.49,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 73751,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 10,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "261060",
+    "municipio": "PAUDALHO",
+    "uf": "PE",
+    "total": 2835522,
+    "reprovado": 72985,
+    "taxa_reprovacao": 2.62,
+    "taxa_aprovacao": 97.38,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 72985,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 0,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "314310",
+    "municipio": "MONTE CARMELO",
+    "uf": "MG",
+    "total": 1954116,
+    "reprovado": 72913,
+    "taxa_reprovacao": 3.82,
+    "taxa_aprovacao": 96.18,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 72827,
+      "INE": 0,
+      "CBO": 55,
+      "MÚLTIPLOS": 31,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "231240",
+    "municipio": "SÃO GONÇALO DO AMARANTE",
+    "uf": "CE",
+    "total": 3230487,
+    "reprovado": 72838,
+    "taxa_reprovacao": 2.32,
+    "taxa_aprovacao": 97.68,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 72780,
+      "INE": 0,
+      "CBO": 14,
+      "MÚLTIPLOS": 44,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "210510",
+    "municipio": "ICATU",
+    "uf": "MA",
+    "total": 502203,
+    "reprovado": 72187,
+    "taxa_reprovacao": 14.52,
+    "taxa_aprovacao": 85.48,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 72187,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 0,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "260915",
+    "municipio": "MANARI",
+    "uf": "PE",
+    "total": 667396,
+    "reprovado": 72079,
+    "taxa_reprovacao": 11.14,
+    "taxa_aprovacao": 88.86,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 72079,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 0,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "291170",
+    "municipio": "GUANAMBI",
+    "uf": "BA",
+    "total": 2576709,
+    "reprovado": 71684,
+    "taxa_reprovacao": 2.85,
+    "taxa_aprovacao": 97.15,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 71677,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 7,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "311890",
+    "municipio": "CORDISBURGO",
+    "uf": "MG",
+    "total": 362920,
+    "reprovado": 71230,
+    "taxa_reprovacao": 20.03,
+    "taxa_aprovacao": 79.97,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 71116,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 114,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "314610",
+    "municipio": "OURO PRETO",
+    "uf": "MG",
+    "total": 2417674,
+    "reprovado": 71137,
+    "taxa_reprovacao": 3.06,
+    "taxa_aprovacao": 96.94,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 71045,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 92,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "250370",
+    "municipio": "CAJAZEIRAS",
+    "uf": "PB",
+    "total": 2762885,
+    "reprovado": 70144,
+    "taxa_reprovacao": 2.59,
+    "taxa_aprovacao": 97.41,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 151,
+      "PROF": 69981,
+      "INE": 10,
+      "CBO": 0,
+      "MÚLTIPLOS": 2,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "230526",
+    "municipio": "IBARETAMA",
+    "uf": "CE",
+    "total": 540372,
+    "reprovado": 70071,
+    "taxa_reprovacao": 13.23,
+    "taxa_aprovacao": 86.77,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 70071,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 0,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "293210",
+    "municipio": "UBAÍRA",
+    "uf": "BA",
+    "total": 625692,
+    "reprovado": 69805,
+    "taxa_reprovacao": 11.34,
+    "taxa_aprovacao": 88.66,
+    "principal_motivo": "MÚLTIPLOS",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 33282,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 36523,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "231290",
+    "municipio": "SOBRAL",
+    "uf": "CE",
+    "total": 8035084,
+    "reprovado": 69704,
+    "taxa_reprovacao": 0.89,
+    "taxa_aprovacao": 99.11,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 128,
+      "PROF": 69438,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 138,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "313950",
+    "municipio": "MANHUMIRIM",
+    "uf": "MG",
+    "total": 1067460,
+    "reprovado": 69013,
+    "taxa_reprovacao": 6.59,
+    "taxa_aprovacao": 93.41,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 69013,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 0,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "352040",
+    "municipio": "ILHABELA",
+    "uf": "SP",
+    "total": 1350773,
+    "reprovado": 68680,
+    "taxa_reprovacao": 5.13,
+    "taxa_aprovacao": 94.87,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 68679,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 1,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "240260",
+    "municipio": "CEARÁ-MIRIM",
+    "uf": "RN",
+    "total": 2373899,
+    "reprovado": 68557,
+    "taxa_reprovacao": 2.95,
+    "taxa_aprovacao": 97.05,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 68308,
+      "INE": 222,
+      "CBO": 16,
+      "MÚLTIPLOS": 11,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "313510",
+    "municipio": "JANAÚBA",
+    "uf": "MG",
+    "total": 3114140,
+    "reprovado": 68482,
+    "taxa_reprovacao": 2.21,
+    "taxa_aprovacao": 97.79,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 68480,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 2,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "317010",
+    "municipio": "UBERABA",
+    "uf": "MG",
+    "total": 4855308,
+    "reprovado": 67837,
+    "taxa_reprovacao": 1.44,
+    "taxa_aprovacao": 98.56,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 67816,
+      "INE": 0,
+      "CBO": 0,
+      "MÚLTIPLOS": 21,
+      "OUTROS": 0
+    }
+  },
+  {
+    "ibge": "420730",
+    "municipio": "IMBITUBA",
+    "uf": "SC",
+    "total": 1697245,
+    "reprovado": 67753,
+    "taxa_reprovacao": 4.03,
+    "taxa_aprovacao": 95.97,
+    "principal_motivo": "PROF",
+    "motivos": {
+      "CNES": 0,
+      "PROF": 67657,
+      "INE": 69,
+      "CBO": 0,
+      "MÚLTIPLOS": 27,
+      "OUTROS": 0
+    }
+  }
+]
