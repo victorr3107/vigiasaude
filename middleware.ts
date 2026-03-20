@@ -47,11 +47,13 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Obtém sessão (também faz refresh do token se necessário)
-  const { data: { session } } = await supabase.auth.getSession()
+  // IMPORTANTE: Use getUser() ao invés de getSession() para segurança.
+  // getUser() valida o token no servidor Supabase Auth.
+  // getSession() não valida o JWT, apenas lê do cookie.
+  const { data: { user } } = await supabase.auth.getUser()
 
-  // ── Sem sessão → bloqueia ─────────────────────────────────────────────────
-  if (!session) {
+  // ── Sem usuário autenticado → bloqueia ────────────────────────────────────
+  if (!user) {
     if (isApiRoute) {
       return NextResponse.json({ error: 'Não autenticado.' }, { status: 401 })
     }
@@ -67,7 +69,7 @@ export async function middleware(request: NextRequest) {
     const { data: perfil } = await supabase
       .from('perfis')
       .select('role')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single()
 
     if (!perfil || perfil.role !== 'super_admin') {
