@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import {
   ComposedChart, LineChart, Line, BarChart, Bar, Area,
@@ -102,6 +102,106 @@ interface Filtros {
   ano: number | null        // null = todos os anos
   competencia: string | null // null = acumulado do período
   comparar: boolean
+}
+
+// ── SelectCustom ──────────────────────────────────────────────────────────────
+
+function SelectOption({
+  opt, isSelected, onClick,
+}: {
+  opt: { value: string; label: string }
+  isSelected: boolean
+  onClick: () => void
+}) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'block', width: '100%', textAlign: 'left',
+        padding: '8px 14px', fontSize: 13, cursor: 'pointer',
+        background: isSelected
+          ? 'var(--accent-subtle)'
+          : hovered
+            ? 'rgba(255,255,255,0.09)'
+            : 'var(--bg-modal)',
+        color: isSelected ? 'var(--accent)' : 'var(--text-primary)',
+        fontWeight: isSelected ? 600 : 400,
+        border: 'none', outline: 'none',
+      }}
+    >
+      {opt.label}
+    </button>
+  )
+}
+
+function SelectCustom({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string
+  onChange: (v: string) => void
+  options: { value: string; label: string }[]
+  placeholder?: string
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const selected = options.find(o => o.value === value)
+  const label = selected?.label ?? placeholder ?? '—'
+
+  return (
+    <div ref={ref} style={{ position: 'relative', minWidth: 160 }}>
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        style={{
+          width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '8px 12px', borderRadius: 8, minHeight: 44, cursor: 'pointer',
+          border: '1px solid var(--border-input)',
+          background: 'var(--bg-input)', color: 'var(--text-primary)',
+          fontSize: 13, textAlign: 'left', gap: 10,
+          outline: 'none',
+        }}
+      >
+        <span>{label}</span>
+        <span style={{ fontSize: 10, color: 'var(--text-muted)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>▼</span>
+      </button>
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 9999,
+          minWidth: '100%',
+          background: 'var(--bg-modal)',
+          border: '1px solid var(--border-strong)',
+          borderRadius: 8,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+          padding: '4px 0', maxHeight: 280, overflowY: 'auto',
+        }}>
+          {options.map(o => (
+            <SelectOption
+              key={o.value}
+              opt={o}
+              isSelected={o.value === value}
+              onClick={() => { onChange(o.value); setOpen(false) }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -256,13 +356,6 @@ function FiltrosGlobais({
     return lista.map(e => e.competencia)
   }, [evolucao, filtros.ano])
 
-  const selectStyle: React.CSSProperties = {
-    padding: '8px 12px', borderRadius: 8,
-    border: '1px solid var(--border-input)',
-    background: 'var(--bg-input)', color: 'var(--text-primary)',
-    fontSize: 13, minHeight: 44, cursor: 'pointer',
-  }
-
   return (
     <div style={{
       display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center',
@@ -275,17 +368,18 @@ function FiltrosGlobais({
         <label style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Ano
         </label>
-        <select
-          value={filtros.ano ?? ''}
-          onChange={e => {
-            const ano = e.target.value ? parseInt(e.target.value) : null
+        <SelectCustom
+          value={filtros.ano != null ? String(filtros.ano) : ''}
+          onChange={v => {
+            const ano = v ? parseInt(v) : null
             onChange({ ano, competencia: null })
           }}
-          style={selectStyle}
-        >
-          <option value="">Todos os anos</option>
-          {anos.map(a => <option key={a} value={a}>{a}</option>)}
-        </select>
+          placeholder="Todos os anos"
+          options={[
+            { value: '', label: 'Todos os anos' },
+            ...anos.map(a => ({ value: String(a), label: String(a) })),
+          ]}
+        />
       </div>
 
       {/* Competência */}
@@ -293,16 +387,15 @@ function FiltrosGlobais({
         <label style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Competência
         </label>
-        <select
+        <SelectCustom
           value={filtros.competencia ?? ''}
-          onChange={e => onChange({ competencia: e.target.value || null })}
-          style={selectStyle}
-        >
-          <option value="">Acumulado do período</option>
-          {competencias.map(c => (
-            <option key={c} value={c}>{labelComp(c)}</option>
-          ))}
-        </select>
+          onChange={v => onChange({ competencia: v || null })}
+          placeholder="Acumulado do período"
+          options={[
+            { value: '', label: 'Acumulado do período' },
+            ...competencias.map(c => ({ value: c, label: labelComp(c) })),
+          ]}
+        />
       </div>
 
       {/* Comparar */}
@@ -753,7 +846,8 @@ function EvolucaoTemporal({ ctx, evolucao, serie, porUf, filtros, onSelectComp }
             width={36}
           />
           <Tooltip
-            contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: 8, fontSize: 11 }}
+            labelStyle={{ color: 'var(--text-primary)', fontWeight: 600 }}
+            contentStyle={{ background: 'var(--bg-modal)', border: '1px solid var(--border-strong)', borderRadius: 8, fontSize: 11 }}
             formatter={(v: unknown, name: unknown) => {
               const n = String(name)
               if (n === 'volume') return [`${fmt(Number(v) * 1000)} fichas`, 'Volume'] as [string, string]
@@ -900,7 +994,7 @@ function MotivosReprovacao({ ctx }: { ctx: MunicipioCtx | null }) {
                   <XAxis type="number" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickFormatter={fmtM} tickLine={false} axisLine={false} />
                   <YAxis type="category" dataKey="motivo" tick={{ fontSize: 11, fill: 'var(--text-secondary)' }} tickLine={false} axisLine={false} width={72} />
                   <Tooltip
-                    contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: 8, fontSize: 12 }}
+                    labelStyle={{ color: 'var(--text-primary)', fontWeight: 600 }} itemStyle={{ color: 'var(--text-secondary)' }} contentStyle={{ background: 'var(--bg-modal)', border: '1px solid var(--border-strong)', borderRadius: 8, fontSize: 12 }}
                     formatter={(v: unknown, _n: unknown, p: { payload?: { pct?: number } }) => [`${fmtM(Number(v))} (${p.payload?.pct ?? 0}%)`, 'Fichas reprovadas'] as [string, string]}
                   />
                   <Bar dataKey="fichas" radius={[0, 4, 4, 0]}>
@@ -930,7 +1024,7 @@ function MotivosReprovacao({ ctx }: { ctx: MunicipioCtx | null }) {
                   <XAxis dataKey="label" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
                   <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} tickFormatter={fmtM} width={44} />
                   <Tooltip
-                    contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: 8, fontSize: 11 }}
+                    labelStyle={{ color: 'var(--text-primary)', fontWeight: 600 }} itemStyle={{ color: 'var(--text-secondary)' }} contentStyle={{ background: 'var(--bg-modal)', border: '1px solid var(--border-strong)', borderRadius: 8, fontSize: 11 }}
                     formatter={(v: unknown) => [fmtM(Number(v)), '']}
                   />
                   <Legend iconType="square" wrapperStyle={{ fontSize: 11 }} />
@@ -1304,7 +1398,7 @@ function PendentesCard({ ctx }: { ctx: MunicipioCtx | null }) {
                     <XAxis type="number" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickFormatter={fmtM} tickLine={false} axisLine={false} />
                     <YAxis type="category" dataKey="label" tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} tickLine={false} axisLine={false} width={ctx?.uf ? 150 : 36} />
                     <Tooltip
-                      contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: 8, fontSize: 11 }}
+                      labelStyle={{ color: 'var(--text-primary)', fontWeight: 600 }} itemStyle={{ color: 'var(--text-secondary)' }} contentStyle={{ background: 'var(--bg-modal)', border: '1px solid var(--border-strong)', borderRadius: 8, fontSize: 11 }}
                       formatter={(v: unknown) => [fmt(Number(v)), 'Fichas pendentes']}
                     />
                     <Bar dataKey="fichas" radius={[0, 4, 4, 0]}>
