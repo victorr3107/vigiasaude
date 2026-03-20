@@ -11,6 +11,7 @@ const DATASETS_PERMITIDOS = new Set([
   'municipios_criticos',
   'pendentes_processamento',
   'por_tipo_equipe',
+  'motivos_por_municipio',
 ])
 
 // GET /api/sisab/[dataset]

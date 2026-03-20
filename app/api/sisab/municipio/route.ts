@@ -12,9 +12,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Parâmetro ibge obrigatório (6 dígitos).' }, { status: 400 })
   }
 
-  // Normaliza para 6 dígitos (remove check digit se vier com 7)
   const ibge6 = ibge.slice(0, 6)
-
   const dir = join(process.cwd(), 'dados_sisab', 'processados')
 
   const readJson = (name: string) => {
@@ -26,6 +24,7 @@ export async function GET(req: Request) {
   const porMun = readJson('por_municipio.json') as Array<Record<string, unknown>> | null
   const criticos = readJson('municipios_criticos.json') as Array<Record<string, unknown>> | null
   const pendentesData = readJson('pendentes_processamento.json') as Record<string, unknown> | null
+  const motivosMunData = readJson('motivos_por_municipio.json') as Record<string, Record<string, number>> | null
 
   if (!porMun) {
     return NextResponse.json(
@@ -34,19 +33,28 @@ export async function GET(req: Request) {
     )
   }
 
-  // Busca o município
   const mun = porMun.find(m => String(m.ibge).slice(0, 6) === ibge6)
-
   if (!mun) {
     return NextResponse.json({ error: `Município IBGE ${ibge6} não encontrado nos dados SISAB.` }, { status: 404 })
   }
 
-  // Verifica se está na lista de críticos
   const critico = criticos?.find(m => String(m.ibge).slice(0, 6) === ibge6) ?? null
-
-  // Pendentes do município
   const pendMun = (pendentesData?.por_municipio as Array<Record<string, unknown>> | undefined)
     ?.find(m => String(m.ibge).slice(0, 6) === ibge6) ?? null
+
+  // Motivos do município (do novo JSON)
+  const motivosMun = motivosMunData?.[ibge6] ?? null
+
+  // Principal motivo (derivado dos motivos do município)
+  let principalMotivo: string | null = null
+  if (motivosMun) {
+    const entries = Object.entries(motivosMun).filter(([, v]) => v > 0)
+    if (entries.length > 0) {
+      principalMotivo = entries.sort((a, b) => b[1] - a[1])[0][0]
+    }
+  } else if (critico?.principal_motivo) {
+    principalMotivo = critico.principal_motivo as string
+  }
 
   return NextResponse.json({
     ibge: mun.ibge,
@@ -61,6 +69,8 @@ export async function GET(req: Request) {
     outros: mun.outros,
     taxa_aprovacao: mun.taxa_aprovacao,
     taxa_reprovacao: mun.taxa_reprovacao,
+    principal_motivo: principalMotivo,
+    motivos: motivosMun,
     critico: critico
       ? {
           principal_motivo: critico.principal_motivo,
