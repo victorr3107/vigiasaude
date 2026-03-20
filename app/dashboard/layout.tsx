@@ -29,6 +29,7 @@ const IconSettings = () => <svg width="18" height="18" viewBox="0 0 24 24" fill=
 const IconLogout = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
 const IconShield = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
 const IconShieldCheck = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+const IconHospital = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
 const IconChevronDown = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
 const IconChevronLeft = ({ collapsed }: { collapsed: boolean }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
@@ -68,9 +69,10 @@ const NAV_ADMIN = [
 ]
 
 const NAV_DADOS = [
-  { href: '/dashboard/producao-aps',           label: 'Produção APS',        icon: <IconChart /> },
-  { href: '/dashboard/producao-ambulatorial',  label: 'Prod. Ambulatorial',  icon: <IconActivity /> },
-  { href: '/dashboard/validacao-sisab',        label: 'Validação SISAB',     icon: <IconShieldCheck /> },
+  { href: '/dashboard/producao-aps',            label: 'Produção APS',        icon: <IconChart /> },
+  { href: '/dashboard/producao-ambulatorial',   label: 'Prod. Ambulatorial',  icon: <IconActivity /> },
+  { href: '/dashboard/morbidade-hospitalar',    label: 'Morbidade Hosp.',     icon: <IconHospital /> },
+  { href: '/dashboard/validacao-sisab',         label: 'Validação SISAB',     icon: <IconShieldCheck /> },
 ]
 
 function ThemeToggle() {

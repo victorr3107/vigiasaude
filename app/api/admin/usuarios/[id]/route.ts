@@ -17,7 +17,7 @@ export async function GET(
     .from('perfis')
     .select(`
       id, nome, email, role, ativo, tema, criado_em, municipio_ativo_id,
-      municipios!perfis_municipio_ativo_id_fkey ( id, nome ),
+      municipios!perfis_municipio_ativo_id_fkey ( id, nome, codigo_ibge ),
       perfis_municipios ( municipio_id, municipios ( id, nome, uf ) )
     `)
     .eq('id', id)

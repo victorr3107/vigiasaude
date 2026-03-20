@@ -7,7 +7,9 @@
       "Bash(python scripts/processar_sisab.py --verbose)",
       "Bash(python scripts/processar_sisab.py)",
       "Bash(python scripts/processar_ambulatorial.py)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(python scripts/processar_sih.py)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
