@@ -201,12 +201,35 @@ function SihKPIs({ dados, benchmarks }: { dados: DadosMunicipio; benchmarks: Ben
                   border: '1px solid var(--accent-border)',
                 }}>{tag}</span>
               ))
-            : <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Sem classificação de polo</span>
+            : (
+                <span style={{
+                  fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20,
+                  background: 'var(--bg-surface)', color: 'var(--text-muted)',
+                  border: '1px solid var(--border-subtle)',
+                }}>Município de pequeno porte</span>
+              )
           }
         </div>
-        <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
-          Principal causa: <strong style={{ color: 'var(--text-primary)' }}>{CAP_NOMES[perfil.cid_principal] ?? perfil.cid_principal}</strong>
-        </p>
+        {perfil.perfil_tags.length === 0 ? (() => {
+          const topCid = dados.por_cid.find(c => c.cid === perfil.cid_principal)
+          return (
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
+              Perfil predominante:{' '}
+              <strong style={{ color: 'var(--text-primary)' }}>
+                {CAP_NOMES[perfil.cid_principal] ?? perfil.cid_principal}
+              </strong>
+              {topCid && (
+                <span style={{ color: 'var(--text-muted)' }}>
+                  {' '}({topCid.pct_total.toFixed(1)}% das internações)
+                </span>
+              )}
+            </p>
+          )
+        })() : (
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
+            Principal causa: <strong style={{ color: 'var(--text-primary)' }}>{CAP_NOMES[perfil.cid_principal] ?? perfil.cid_principal}</strong>
+          </p>
+        )}
         {isPolo && (
           <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
             {fmtPct(fluxo.pct_externos)} das internações são de outros municípios
@@ -219,11 +242,20 @@ function SihKPIs({ dados, benchmarks }: { dados: DadosMunicipio; benchmarks: Ben
         <p style={{ fontSize: 32, fontWeight: 800, color: mortColor, lineHeight: 1, margin: 0 }}>
           {fmtPct(tx)}
         </p>
-        <span style={{
-          alignSelf: 'flex-start', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 20,
-          background: mortColor === 'var(--accent)' ? 'var(--accent-subtle)' : mortColor === '#F59E0B' ? 'rgba(245,158,11,0.12)' : 'rgba(239,68,68,0.12)',
-          color: mortColor,
-        }}>{mortLabel}</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          <span style={{
+            alignSelf: 'flex-start', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 20,
+            background: mortColor === 'var(--accent)' ? 'var(--accent-subtle)' : mortColor === '#F59E0B' ? 'rgba(245,158,11,0.12)' : 'rgba(239,68,68,0.12)',
+            color: mortColor,
+          }}>{mortLabel}</span>
+          {perfil.total_internacoes < 1000 && (
+            <span title="Taxa calculada sobre volume baixo — interprete com cautela" style={{
+              fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, cursor: 'help',
+              background: 'rgba(99,179,237,0.12)', color: '#63B3ED',
+              border: '1px solid rgba(99,179,237,0.25)',
+            }}>⚠ Amostra pequena</span>
+          )}
+        </div>
         <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
           Mediana SP: {fmtPct(bench.mediana)} · P75: {fmtPct(bench.p75)}
         </p>
@@ -242,10 +274,37 @@ function SihKPIs({ dados, benchmarks }: { dados: DadosMunicipio; benchmarks: Ben
         <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
           Média SP: {fmtR(benchmarks.custo_medio.media)}
         </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <VarBadge v={parseFloat(((perfil.custo_medio_geral - benchmarks.custo_medio.media) / benchmarks.custo_medio.media * 100).toFixed(1))} />
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>vs média SP</span>
-        </div>
+        {(() => {
+          const ratio = perfil.custo_medio_geral / benchmarks.custo_medio.media
+          const diff  = ((ratio - 1) * 100).toFixed(1)
+          if (ratio < 0.5) return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 20, alignSelf: 'flex-start',
+                background: 'rgba(99,179,237,0.12)', color: '#63B3ED', border: '1px solid rgba(99,179,237,0.3)' }}>
+                ↓ {Math.abs(parseFloat(diff))}% vs média SP
+              </span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                Abaixo da média SP — perfil de baixa complexidade
+              </span>
+            </div>
+          )
+          if (ratio > 1.5) return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 20, alignSelf: 'flex-start',
+                background: 'rgba(245,158,11,0.12)', color: '#F59E0B', border: '1px solid rgba(245,158,11,0.3)' }}>
+                ↑ +{diff}% vs média SP
+              </span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                Acima da média — pode refletir perfil de alta complexidade
+              </span>
+            </div>
+          )
+          return (
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+              {parseFloat(diff) >= 0 ? '+' : ''}{diff}% vs média SP — dentro da faixa esperada
+            </span>
+          )
+        })()}
         <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
           Permanência média: {perfil.permanencia_media_geral.toFixed(1)} dias
         </p>
@@ -348,7 +407,7 @@ function SihEvolucaoTemporal({
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr auto', gap: 24, alignItems: 'start' }}>
         {/* Gráfico principal */}
         <div>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={chartData} margin={{ top: 20, right: 8, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="gradSih" x1="0" y1="0" x2="0" y2="1">
@@ -357,14 +416,36 @@ function SihEvolucaoTemporal({
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
-              <XAxis dataKey="mes" tickFormatter={formatMes} tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
-                interval={periodo === 'todos' ? 5 : 1} />
+              <XAxis
+                dataKey="mes"
+                tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
+                tickFormatter={(m: string) => {
+                  if (periodo !== 'todos') return m.split('/')[1] ?? m
+                  // só exibe Jan de cada ano
+                  const [, mon] = m.split('/')
+                  return mon === '01' ? m.split('/')[0] : ''
+                }}
+                interval={0}
+              />
               <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} width={52}
                 tickFormatter={v => fmt(v)} />
               <Tooltip
                 contentStyle={{ background: 'var(--bg-modal)', border: '1px solid var(--border-strong)', borderRadius: 8, fontSize: 12 }}
                 labelStyle={{ color: 'var(--text-primary)', fontWeight: 600 }}
-                formatter={(v: unknown) => [fmt(v as number), 'Internações']}
+                formatter={(v: unknown, _name: unknown, props: { payload?: { media?: number } }) => {
+                  const avg = props.payload?.media
+                  return [
+                    <span key="v">
+                      <strong>{fmt(v as number)}</strong> internações
+                      {avg !== undefined && (
+                        <span style={{ color: 'var(--text-muted)', marginLeft: 8, fontSize: 11 }}>
+                          (média {fmt(avg)})
+                        </span>
+                      )}
+                    </span>,
+                    '',
+                  ]
+                }}
               />
               <ReferenceLine y={media} stroke="var(--text-muted)" strokeDasharray="4 4"
                 label={{ value: 'Média', position: 'insideTopRight', fontSize: 10, fill: 'var(--text-muted)' }} />
@@ -391,10 +472,11 @@ function SihEvolucaoTemporal({
               <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: '0 0 8px', fontWeight: 600 }}>
                 CIR {cirEntry.nome_cir}
               </p>
-              <ResponsiveContainer width="100%" height={80}>
+              <ResponsiveContainer width="100%" height={120}>
                 <BarChart data={cirData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                   <Bar dataKey="internacoes" fill="var(--accent)" opacity={0.6} radius={[3, 3, 0, 0]} />
                   <XAxis dataKey="ano" tick={{ fontSize: 9, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 9, fill: 'var(--text-muted)' }} width={40} tickFormatter={v => fmt(v)} />
                   <Tooltip
                     contentStyle={{ background: 'var(--bg-modal)', border: '1px solid var(--border-strong)', borderRadius: 6, fontSize: 11 }}
                     formatter={(v: unknown) => [fmt(v as number), 'Internações CIR']}
@@ -575,9 +657,9 @@ function SihMortalidade({
   const isLocal = perspectiva === 'local'
   const bench   = benchmarks.tx_mortalidade
 
-  // Filtra: ≥ 50 internações, exclui Cap 05
+  // Inclui todas as causas com internações > 0, exceto Cap 05
   const caps = por_cid
-    .filter(c => c.cid !== 'Cap 05' && (isLocal ? c.internacoes_local : c.internacoes_residentes) >= 50)
+    .filter(c => c.cid !== 'Cap 05' && (isLocal ? c.internacoes_local : c.internacoes_residentes) > 0)
     .map(c => ({
       ...c,
       tx: isLocal ? c.tx_mortalidade_local : c.tx_mortalidade_residentes,
@@ -594,10 +676,37 @@ function SihMortalidade({
 
   return (
     <CardShell title="Mortalidade Hospitalar por Causa">
+      {/* Legenda no topo */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, color: 'var(--text-muted)', flexWrap: 'wrap' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 3, height: 14, background: 'var(--text-muted)', borderRadius: 2, display: 'inline-block' }} />
+          Mediana SP ({fmtPct(bench.mediana)})
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 12, height: 5, background: 'var(--accent)', borderRadius: 2, display: 'inline-block' }} />
+          ≤ Mediana
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 12, height: 5, background: '#F59E0B', borderRadius: 2, display: 'inline-block' }} />
+          Mediana – P75
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 12, height: 5, background: 'var(--danger)', borderRadius: 2, display: 'inline-block' }} />
+          {'>'} P75
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 12, height: 5, background: 'var(--border-subtle)', borderRadius: 2, display: 'inline-block' }} />
+          Sem óbitos registrados
+        </span>
+      </div>
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {caps.map(c => {
-          const cor = MortColor(c.tx, benchmarks)
-          const isExp = expandido === c.cid
+          const semObitos  = c.tx === 0
+          const baixoVol   = c.intern < 30
+          const cor    = (semObitos || baixoVol) ? 'var(--text-muted)' : MortColor(c.tx, benchmarks)
+          const barCor = (semObitos || baixoVol) ? 'var(--border-subtle)' : MortColor(c.tx, benchmarks)
+          const isExp  = expandido === c.cid
 
           return (
             <div key={c.cid}>
@@ -610,23 +719,29 @@ function SihMortalidade({
                 <span style={{ fontSize: 10, color: 'var(--text-muted)', minWidth: 44, flexShrink: 0 }}>{c.cid}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                    <span style={{ fontSize: 12, color: 'var(--text-secondary)', flex: 1 }}>{c.nome}</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: cor, minWidth: 42, textAlign: 'right' }}>
-                      {fmtPct(c.tx)}
+                    <span style={{ fontSize: 12, color: semObitos ? 'var(--text-muted)' : 'var(--text-secondary)', flex: 1 }}>{c.nome}</span>
+                    <span style={{ fontSize: 13, fontWeight: (semObitos || baixoVol) ? 400 : 700, color: cor, minWidth: 42, textAlign: 'right' }}>
+                      {baixoVol
+                        ? <span title="Volume insuficiente para taxa confiável (< 30 internações)" style={{ cursor: 'help' }}>—</span>
+                        : semObitos
+                          ? <span title="Sem óbitos registrados" style={{ cursor: 'help' }}>—</span>
+                          : fmtPct(c.tx)
+                      }
                     </span>
                   </div>
                   {/* Barra */}
                   <div style={{ position: 'relative', height: 6, background: 'var(--bg-surface)', borderRadius: 3, overflow: 'visible' }}>
                     <div style={{
-                      height: '100%', width: `${Math.min(c.tx / (bench.p90 || 15) * 100, 100)}%`,
-                      background: cor, borderRadius: 3, transition: 'width 0.3s',
+                      height: '100%', width: (semObitos || baixoVol) ? '2px' : `${Math.min(c.tx / (bench.p90 || 15) * 100, 100)}%`,
+                      background: barCor, borderRadius: 3, transition: 'width 0.3s',
                     }} />
-                    {/* Linha de mediana */}
-                    <div style={{
-                      position: 'absolute', top: -2, bottom: -2,
-                      left: `${Math.min(bench.mediana / (bench.p90 || 15) * 100, 100)}%`,
-                      width: 2, background: 'var(--text-muted)', borderRadius: 2,
-                    }} />
+                    {!semObitos && !baixoVol && (
+                      <div style={{
+                        position: 'absolute', top: -2, bottom: -2,
+                        left: `${Math.min(bench.mediana / (bench.p90 || 15) * 100, 100)}%`,
+                        width: 2, background: 'var(--text-muted)', borderRadius: 2,
+                      }} />
+                    )}
                   </div>
                 </div>
               </button>
@@ -658,25 +773,6 @@ function SihMortalidade({
         })}
       </div>
 
-      {/* Linha de referência — legenda */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 11, color: 'var(--text-muted)' }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ width: 2, height: 12, background: 'var(--text-muted)', display: 'inline-block' }} />
-          Mediana SP ({fmtPct(bench.mediana)})
-        </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ width: 10, height: 4, background: 'var(--accent)', borderRadius: 2, display: 'inline-block' }} />
-          ≤ Mediana
-        </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ width: 10, height: 4, background: '#F59E0B', borderRadius: 2, display: 'inline-block' }} />
-          Mediana–P75
-        </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ width: 10, height: 4, background: 'var(--danger)', borderRadius: 2, display: 'inline-block' }} />
-          {'>'}P75
-        </span>
-      </div>
 
       {/* Cap 05 separado */}
       {cap05 && (
@@ -721,12 +817,14 @@ function SihPerfilPacientes({ dados, perspectiva, isMobile }: {
     ? faixa_etaria.local_internacao
     : faixa_etaria.residencia
 
-  // Prepara dados para gráfico de barras — ambas perspectivas sobrepostas
-  const chartData = faixa_etaria.local_internacao.map((f, i) => ({
-    faixa: f.faixa.replace(' anos', '').replace('Menor 1 ', '<1 '),
-    local: f.qtd,
-    residencia: faixa_etaria.residencia[i]?.qtd ?? 0,
-  }))
+  // Prepara dados para gráfico de barras — ambas perspectivas sobrepostas, filtra zerados
+  const chartData = faixa_etaria.local_internacao
+    .map((f, i) => ({
+      faixa: f.faixa.replace(' anos', '').replace('Menor 1 ', '<1 '),
+      local: f.qtd,
+      residencia: faixa_etaria.residencia[i]?.qtd ?? 0,
+    }))
+    .filter(d => d.local > 0 || d.residencia > 0)
 
   const idosos = faixas
     .filter(f => ['60 a 69 anos', '70 a 79 anos', '80 anos e mais'].includes(f.faixa))
@@ -749,7 +847,7 @@ function SihPerfilPacientes({ dados, perspectiva, isMobile }: {
           <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Faixa Etária
           </p>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={Math.max(280, chartData.length * 28)}>
             <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
@@ -781,7 +879,7 @@ function SihPerfilPacientes({ dados, perspectiva, isMobile }: {
               { label: 'Urgência',  data: urgencia, color: '#F59E0B' },
               { label: 'Eletivo',   data: eletivo,  color: 'var(--accent)' },
               { label: 'Acidente',  data: acidente, color: 'var(--danger)' },
-            ].map(({ label, data, color }) => (
+            ].filter(({ data }) => data.qtd > 0).map(({ label, data, color }) => (
               <div key={label}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                   <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>{label}</span>
@@ -907,6 +1005,13 @@ function SihFluxoAssistencial({ dados }: { dados: DadosMunicipio }) {
     ? ((totalRes - totalLoc) / totalRes * 100).toFixed(1)
     : '0.0'
 
+  // Top 3 CIDs onde residentes mais precisaram sair para tratar
+  const top3Fora = [...fluxo.por_cid]
+    .map(c => ({ ...c, fora: Math.max(0, c.internacoes_residentes - c.internacoes_local) }))
+    .filter(c => c.fora > 0)
+    .sort((a, b) => b.fora - a.fora)
+    .slice(0, 3)
+
   return (
     <CardShell title="Fluxo Assistencial">
       <div style={{ padding: '12px 16px', background: 'var(--bg-surface)', borderRadius: 10, border: '1px solid var(--border-subtle)' }}>
@@ -928,6 +1033,27 @@ function SihFluxoAssistencial({ dados }: { dados: DadosMunicipio }) {
           <p style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>{fmt(totalRes)}</p>
         </div>
       </div>
+
+      {top3Fora.length > 0 && (
+        <div>
+          <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            Principais causas tratadas fora do município
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {top3Fora.map(c => (
+              <div key={c.cid} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
+                <span style={{ color: 'var(--text-secondary)' }}>{CAP_NOMES[c.cid] ?? c.cid}</span>
+                <span style={{
+                  fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 12,
+                  background: 'rgba(239,68,68,0.08)', color: 'var(--danger)',
+                }}>
+                  {fmt(c.fora)} residentes fora
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </CardShell>
   )
 }
@@ -1023,12 +1149,28 @@ export default function MorbidadeHospitalarPage() {
 
   if (!dados || !bench) return null
 
+  const ANCHORS = [
+    { id: 'sec-internacoes', label: 'Internações' },
+    { id: 'sec-causas',      label: 'Causas' },
+    { id: 'sec-mortalidade', label: 'Mortalidade' },
+    { id: 'sec-fluxo',       label: 'Fluxo' },
+  ]
+
+  const Divider = () => (
+    <div style={{ height: 1, background: 'var(--border-subtle)', margin: '4px 0' }} />
+  )
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}} @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <style>{`
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .sih-anchor-bar { position: sticky; top: 0; z-index: 10; }
+        html { scroll-behavior: smooth; }
+      `}</style>
 
       {/* Header da página */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, animation: 'fadeIn 0.3s ease' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, animation: 'fadeIn 0.3s ease', paddingBottom: 20 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.4px' }}>
             Morbidade Hospitalar — SIH/SUS
@@ -1061,26 +1203,52 @@ export default function MorbidadeHospitalarPage() {
         </div>
       </div>
 
-      {/* Linha 1 — KPIs */}
-      <div style={{ animation: 'fadeIn 0.35s ease' }}>
+      {/* Anchor nav */}
+      <div className="sih-anchor-bar" style={{
+        background: 'var(--bg-card)', borderBottom: '1px solid var(--border-subtle)',
+        display: 'flex', gap: 0, marginBottom: 24,
+      }}>
+        {ANCHORS.map(a => (
+          <a key={a.id} href={`#${a.id}`} style={{
+            padding: '8px 16px', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)',
+            textDecoration: 'none', borderRight: '1px solid var(--border-subtle)',
+            transition: 'color 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}>
+            {a.label}
+          </a>
+        ))}
+      </div>
+
+      {/* Seção 1 — KPIs */}
+      <div id="sec-internacoes" style={{ animation: 'fadeIn 0.35s ease', paddingBottom: 24 }}>
         <SihKPIs dados={dados} benchmarks={bench.benchmarks} />
       </div>
 
-      {/* Linha 2 — Evolução (55%) + Perfil Pacientes (45%) */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '55fr 45fr', gap: 16, animation: 'fadeIn 0.4s ease' }}>
+      <Divider />
+
+      {/* Seção 2 — Evolução (55%) + Perfil Pacientes (45%) */}
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '55fr 45fr', gap: 16, animation: 'fadeIn 0.4s ease', paddingTop: 24, paddingBottom: 24 }}>
         <SihEvolucaoTemporal dados={dados} cirEvolucao={bench.cir_evolucao} isMobile={isMobile} />
         <SihPerfilPacientes  dados={dados} perspectiva={perspectiva} isMobile={isMobile} />
       </div>
 
-      {/* Linha 3 — Causas de Internação (largura total) */}
-      <div style={{ animation: 'fadeIn 0.45s ease' }}>
+      <Divider />
+
+      {/* Seção 3 — Causas de Internação */}
+      <div id="sec-causas" style={{ animation: 'fadeIn 0.45s ease', paddingTop: 24, paddingBottom: 24 }}>
         <SihCausasInternacao dados={dados} perspectiva={perspectiva} isMobile={isMobile} />
       </div>
 
-      {/* Linha 4 — Mortalidade (55%) + Fluxo Assistencial (45%) */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '55fr 45fr', gap: 16, animation: 'fadeIn 0.5s ease' }}>
+      <Divider />
+
+      {/* Seção 4 — Mortalidade (55%) + Fluxo Assistencial (45%) */}
+      <div id="sec-mortalidade" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '55fr 45fr', gap: 16, animation: 'fadeIn 0.5s ease', paddingTop: 24 }}>
         <SihMortalidade      dados={dados} benchmarks={bench.benchmarks} perspectiva={perspectiva} />
-        <SihFluxoAssistencial dados={dados} />
+        <div id="sec-fluxo">
+          <SihFluxoAssistencial dados={dados} />
+        </div>
       </div>
     </div>
   )
