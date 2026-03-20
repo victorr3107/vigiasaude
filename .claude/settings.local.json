@@ -9,7 +9,13 @@
       "Bash(python scripts/processar_ambulatorial.py)",
       "Bash(npx next:*)",
       "Bash(python scripts/processar_sih.py)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(python -X utf8 scripts/gerar_benchmarks_aps_sp.py --ano 2024)",
+      "Bash(node -e \":*)",
+      "Bash(python scripts/validar_sinan_dengue.py)",
+      "Bash(python -X utf8 scripts/validar_sinan_dengue.py)",
+      "Bash(python -X utf8 scripts/processar_sinan_dengue.py)",
+      "Bash(python -X utf8 -c \":*)"
     ]
   }
 }

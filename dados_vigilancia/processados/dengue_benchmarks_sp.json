@@ -1,0 +1,374 @@
+{
+  "total_casos_sp_por_ano": {
+    "2019": 444113,
+    "2020": 204616,
+    "2021": 158546,
+    "2022": 350898,
+    "2023": 338009,
+    "2024": 2187610,
+    "2025": 890465,
+    "2026": 30471
+  },
+  "ano_pico_sp": "2024",
+  "municipios_com_dado": 645,
+  "sazonalidade_sp": {
+    "por_semana": [
+      {
+        "semana": 1,
+        "pct_historico": 0.85,
+        "casos_historicos": 39206
+      },
+      {
+        "semana": 2,
+        "pct_historico": 1.07,
+        "casos_historicos": 49324
+      },
+      {
+        "semana": 3,
+        "pct_historico": 1.35,
+        "casos_historicos": 62358
+      },
+      {
+        "semana": 4,
+        "pct_historico": 1.74,
+        "casos_historicos": 79984
+      },
+      {
+        "semana": 5,
+        "pct_historico": 2.06,
+        "casos_historicos": 95045
+      },
+      {
+        "semana": 6,
+        "pct_historico": 2.43,
+        "casos_historicos": 112076
+      },
+      {
+        "semana": 7,
+        "pct_historico": 2.93,
+        "casos_historicos": 135076
+      },
+      {
+        "semana": 8,
+        "pct_historico": 3.3,
+        "casos_historicos": 152092
+      },
+      {
+        "semana": 9,
+        "pct_historico": 3.85,
+        "casos_historicos": 177540
+      },
+      {
+        "semana": 10,
+        "pct_historico": 4.37,
+        "casos_historicos": 201520
+      },
+      {
+        "semana": 11,
+        "pct_historico": 4.91,
+        "casos_historicos": 226320
+      },
+      {
+        "semana": 12,
+        "pct_historico": 5.77,
+        "casos_historicos": 265721
+      },
+      {
+        "semana": 13,
+        "pct_historico": 5.73,
+        "casos_historicos": 264169
+      },
+      {
+        "semana": 14,
+        "pct_historico": 6.15,
+        "casos_historicos": 283512
+      },
+      {
+        "semana": 15,
+        "pct_historico": 6.49,
+        "casos_historicos": 298935
+      },
+      {
+        "semana": 16,
+        "pct_historico": 6.1,
+        "casos_historicos": 281040
+      },
+      {
+        "semana": 17,
+        "pct_historico": 5.9,
+        "casos_historicos": 271877
+      },
+      {
+        "semana": 18,
+        "pct_historico": 5.88,
+        "casos_historicos": 271103
+      },
+      {
+        "semana": 19,
+        "pct_historico": 5.87,
+        "casos_historicos": 270322
+      },
+      {
+        "semana": 20,
+        "pct_historico": 5.18,
+        "casos_historicos": 238542
+      },
+      {
+        "semana": 21,
+        "pct_historico": 3.84,
+        "casos_historicos": 176859
+      },
+      {
+        "semana": 22,
+        "pct_historico": 2.6,
+        "casos_historicos": 119679
+      },
+      {
+        "semana": 23,
+        "pct_historico": 1.8,
+        "casos_historicos": 82822
+      },
+      {
+        "semana": 24,
+        "pct_historico": 1.5,
+        "casos_historicos": 69281
+      },
+      {
+        "semana": 25,
+        "pct_historico": 1.18,
+        "casos_historicos": 54479
+      },
+      {
+        "semana": 26,
+        "pct_historico": 0.87,
+        "casos_historicos": 40055
+      },
+      {
+        "semana": 27,
+        "pct_historico": 0.58,
+        "casos_historicos": 26492
+      },
+      {
+        "semana": 28,
+        "pct_historico": 0.42,
+        "casos_historicos": 19205
+      },
+      {
+        "semana": 29,
+        "pct_historico": 0.33,
+        "casos_historicos": 14999
+      },
+      {
+        "semana": 30,
+        "pct_historico": 0.28,
+        "casos_historicos": 12801
+      },
+      {
+        "semana": 31,
+        "pct_historico": 0.24,
+        "casos_historicos": 10959
+      },
+      {
+        "semana": 32,
+        "pct_historico": 0.2,
+        "casos_historicos": 9079
+      },
+      {
+        "semana": 33,
+        "pct_historico": 0.17,
+        "casos_historicos": 8011
+      },
+      {
+        "semana": 34,
+        "pct_historico": 0.16,
+        "casos_historicos": 7503
+      },
+      {
+        "semana": 35,
+        "pct_historico": 0.15,
+        "casos_historicos": 6699
+      },
+      {
+        "semana": 36,
+        "pct_historico": 0.15,
+        "casos_historicos": 7076
+      },
+      {
+        "semana": 37,
+        "pct_historico": 0.16,
+        "casos_historicos": 7457
+      },
+      {
+        "semana": 38,
+        "pct_historico": 0.16,
+        "casos_historicos": 7317
+      },
+      {
+        "semana": 39,
+        "pct_historico": 0.15,
+        "casos_historicos": 7117
+      },
+      {
+        "semana": 40,
+        "pct_historico": 0.16,
+        "casos_historicos": 7601
+      },
+      {
+        "semana": 41,
+        "pct_historico": 0.15,
+        "casos_historicos": 7097
+      },
+      {
+        "semana": 42,
+        "pct_historico": 0.17,
+        "casos_historicos": 7614
+      },
+      {
+        "semana": 43,
+        "pct_historico": 0.17,
+        "casos_historicos": 7679
+      },
+      {
+        "semana": 44,
+        "pct_historico": 0.17,
+        "casos_historicos": 8035
+      },
+      {
+        "semana": 45,
+        "pct_historico": 0.19,
+        "casos_historicos": 8646
+      },
+      {
+        "semana": 46,
+        "pct_historico": 0.2,
+        "casos_historicos": 9264
+      },
+      {
+        "semana": 47,
+        "pct_historico": 0.23,
+        "casos_historicos": 10765
+      },
+      {
+        "semana": 48,
+        "pct_historico": 0.26,
+        "casos_historicos": 12171
+      },
+      {
+        "semana": 49,
+        "pct_historico": 0.31,
+        "casos_historicos": 14447
+      },
+      {
+        "semana": 50,
+        "pct_historico": 0.37,
+        "casos_historicos": 17183
+      },
+      {
+        "semana": 51,
+        "pct_historico": 0.38,
+        "casos_historicos": 17532
+      },
+      {
+        "semana": 52,
+        "pct_historico": 0.3,
+        "casos_historicos": 13830
+      },
+      {
+        "semana": 53,
+        "pct_historico": 0.04,
+        "casos_historicos": 1715
+      }
+    ],
+    "por_mes": [
+      {
+        "mes": "Jan",
+        "mes_nome": "Janeiro",
+        "mes_num": 1,
+        "pct_historico": 5.62,
+        "casos_historicos": 247853
+      },
+      {
+        "mes": "Fev",
+        "mes_nome": "Fevereiro",
+        "mes_num": 2,
+        "pct_historico": 11.09,
+        "casos_historicos": 488841
+      },
+      {
+        "mes": "Mar",
+        "mes_nome": "Março",
+        "mes_num": 3,
+        "pct_historico": 22.6,
+        "casos_historicos": 995621
+      },
+      {
+        "mes": "Abr",
+        "mes_nome": "Abril",
+        "mes_num": 4,
+        "pct_historico": 26.68,
+        "casos_historicos": 1175445
+      },
+      {
+        "mes": "Mai",
+        "mes_nome": "Maio",
+        "mes_num": 5,
+        "pct_historico": 21.51,
+        "casos_historicos": 947840
+      },
+      {
+        "mes": "Jun",
+        "mes_nome": "Junho",
+        "mes_num": 6,
+        "pct_historico": 5.99,
+        "casos_historicos": 263723
+      },
+      {
+        "mes": "Jul",
+        "mes_nome": "Julho",
+        "mes_num": 7,
+        "pct_historico": 1.66,
+        "casos_historicos": 73135
+      },
+      {
+        "mes": "Ago",
+        "mes_nome": "Agosto",
+        "mes_num": 8,
+        "pct_historico": 0.79,
+        "casos_historicos": 34733
+      },
+      {
+        "mes": "Set",
+        "mes_nome": "Setembro",
+        "mes_num": 9,
+        "pct_historico": 0.68,
+        "casos_historicos": 29903
+      },
+      {
+        "mes": "Out",
+        "mes_nome": "Outubro",
+        "mes_num": 10,
+        "pct_historico": 0.75,
+        "casos_historicos": 33197
+      },
+      {
+        "mes": "Nov",
+        "mes_nome": "Novembro",
+        "mes_num": 11,
+        "pct_historico": 0.97,
+        "casos_historicos": 42754
+      },
+      {
+        "mes": "Dez",
+        "mes_nome": "Dezembro",
+        "mes_num": 12,
+        "pct_historico": 1.66,
+        "casos_historicos": 73296
+      }
+    ]
+  },
+  "taxa_hospitalizacao_sp_media": 3.52,
+  "taxa_letalidade_sp_media": 0.096,
+  "pct_sinais_alarme_sp_media": 1.25,
+  "taxa_hospitalizacao_por_municipio_media": 3.47,
+  "taxa_letalidade_por_municipio_media": 0.12
+}

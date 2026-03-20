@@ -5,8 +5,10 @@
 // Módulo SIH/SUS — Morbidade Hospitalar — SP
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import TabNavigation, { TabItem } from '@/app/components/TabNavigation'
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine,
@@ -1060,7 +1062,16 @@ function SihFluxoAssistencial({ dados }: { dados: DadosMunicipio }) {
 
 // ── Página principal ──────────────────────────────────────────────────────────
 
-export default function MorbidadeHospitalarPage() {
+const SIH_TABS: TabItem[] = [
+  { id: 'geral',       label: 'Visão Geral' },
+  { id: 'causas',      label: 'Causas' },
+  { id: 'mortalidade', label: 'Mortalidade' },
+  { id: 'perfil',      label: 'Perfil dos Pacientes' },
+  { id: 'fluxo',       label: 'Fluxo Assistencial' },
+]
+
+function MorbidadeHospitalarInner() {
+  const searchParams = useSearchParams()
   const [perfil, setPerfil] = useState<{ ibge: string; nome: string } | null>(null)
   const [dados,  setDados]  = useState<DadosMunicipio | null>(null)
   const [bench,  setBench]  = useState<{ benchmarks: Benchmarks; cir_evolucao: CirEntry[] } | null>(null)
@@ -1068,6 +1079,10 @@ export default function MorbidadeHospitalarPage() {
   const [loading, setLoading] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
   const [perspectiva, setPerspectiva] = useState<Perspectiva>('local')
+  const [activeTab, setActiveTab] = useState(() => {
+    const t = searchParams.get('tab')
+    return SIH_TABS.find(x => x.id === t) ? t! : 'geral'
+  })
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
@@ -1149,24 +1164,11 @@ export default function MorbidadeHospitalarPage() {
 
   if (!dados || !bench) return null
 
-  const ANCHORS = [
-    { id: 'sec-internacoes', label: 'Internações' },
-    { id: 'sec-causas',      label: 'Causas' },
-    { id: 'sec-mortalidade', label: 'Mortalidade' },
-    { id: 'sec-fluxo',       label: 'Fluxo' },
-  ]
-
-  const Divider = () => (
-    <div style={{ height: 1, background: 'var(--border-subtle)', margin: '4px 0' }} />
-  )
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       <style>{`
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
         @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-        .sih-anchor-bar { position: sticky; top: 0; z-index: 10; }
-        html { scroll-behavior: smooth; }
       `}</style>
 
       {/* Header da página */}
@@ -1182,7 +1184,7 @@ export default function MorbidadeHospitalarPage() {
           )}
         </div>
 
-        {/* Seletor de perspectiva global */}
+        {/* Seletor de perspectiva global — afeta Causas, Mortalidade e Perfil */}
         <div style={{
           display: 'flex', background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)',
           borderRadius: 10, overflow: 'hidden',
@@ -1203,53 +1205,54 @@ export default function MorbidadeHospitalarPage() {
         </div>
       </div>
 
-      {/* Anchor nav */}
-      <div className="sih-anchor-bar" style={{
-        background: 'var(--bg-card)', borderBottom: '1px solid var(--border-subtle)',
-        display: 'flex', gap: 0, marginBottom: 24,
-      }}>
-        {ANCHORS.map(a => (
-          <a key={a.id} href={`#${a.id}`} style={{
-            padding: '8px 16px', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)',
-            textDecoration: 'none', borderRight: '1px solid var(--border-subtle)',
-            transition: 'color 0.15s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}>
-            {a.label}
-          </a>
-        ))}
+      {/* Abas */}
+      <div style={{ marginBottom: 24 }}>
+        <TabNavigation tabs={SIH_TABS} activeTab={activeTab} onChange={setActiveTab} />
       </div>
 
-      {/* Seção 1 — KPIs */}
-      <div id="sec-internacoes" style={{ animation: 'fadeIn 0.35s ease', paddingBottom: 24 }}>
-        <SihKPIs dados={dados} benchmarks={bench.benchmarks} />
-      </div>
+      {/* Aba: Visão Geral */}
+      {activeTab === 'geral' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'fadeIn 0.3s ease' }}>
+          <SihKPIs dados={dados} benchmarks={bench.benchmarks} />
+          <SihEvolucaoTemporal dados={dados} cirEvolucao={bench.cir_evolucao} isMobile={isMobile} />
+        </div>
+      )}
 
-      <Divider />
+      {/* Aba: Causas */}
+      {activeTab === 'causas' && (
+        <div style={{ animation: 'fadeIn 0.3s ease' }}>
+          <SihCausasInternacao dados={dados} perspectiva={perspectiva} isMobile={isMobile} />
+        </div>
+      )}
 
-      {/* Seção 2 — Evolução (55%) + Perfil Pacientes (45%) */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '55fr 45fr', gap: 16, animation: 'fadeIn 0.4s ease', paddingTop: 24, paddingBottom: 24 }}>
-        <SihEvolucaoTemporal dados={dados} cirEvolucao={bench.cir_evolucao} isMobile={isMobile} />
-        <SihPerfilPacientes  dados={dados} perspectiva={perspectiva} isMobile={isMobile} />
-      </div>
+      {/* Aba: Mortalidade */}
+      {activeTab === 'mortalidade' && (
+        <div style={{ animation: 'fadeIn 0.3s ease' }}>
+          <SihMortalidade dados={dados} benchmarks={bench.benchmarks} perspectiva={perspectiva} />
+        </div>
+      )}
 
-      <Divider />
+      {/* Aba: Perfil dos Pacientes */}
+      {activeTab === 'perfil' && (
+        <div style={{ animation: 'fadeIn 0.3s ease' }}>
+          <SihPerfilPacientes dados={dados} perspectiva={perspectiva} isMobile={isMobile} />
+        </div>
+      )}
 
-      {/* Seção 3 — Causas de Internação */}
-      <div id="sec-causas" style={{ animation: 'fadeIn 0.45s ease', paddingTop: 24, paddingBottom: 24 }}>
-        <SihCausasInternacao dados={dados} perspectiva={perspectiva} isMobile={isMobile} />
-      </div>
-
-      <Divider />
-
-      {/* Seção 4 — Mortalidade (55%) + Fluxo Assistencial (45%) */}
-      <div id="sec-mortalidade" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '55fr 45fr', gap: 16, animation: 'fadeIn 0.5s ease', paddingTop: 24 }}>
-        <SihMortalidade      dados={dados} benchmarks={bench.benchmarks} perspectiva={perspectiva} />
-        <div id="sec-fluxo">
+      {/* Aba: Fluxo Assistencial */}
+      {activeTab === 'fluxo' && (
+        <div style={{ animation: 'fadeIn 0.3s ease' }}>
           <SihFluxoAssistencial dados={dados} />
         </div>
-      </div>
+      )}
     </div>
+  )
+}
+
+export default function MorbidadeHospitalarPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: 14 }}>Carregando…</div>}>
+      <MorbidadeHospitalarInner />
+    </Suspense>
   )
 }

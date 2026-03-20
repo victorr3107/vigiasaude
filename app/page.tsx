@@ -23,8 +23,10 @@ export default function LoginPage() {
   const [buscaMunicipio, setBuscaMunicipio] = useState('')
   const [escolhendo, setEscolhendo] = useState(false)
 
-  // Redireciona se já estiver autenticado
+  // Redireciona se já estiver autenticado (suprimido se ?sair=1 estiver na URL)
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('sair') === '1') return          // usuário chegou via logout explícito
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) window.location.href = '/dashboard'
     })

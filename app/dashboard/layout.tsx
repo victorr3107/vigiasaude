@@ -73,6 +73,7 @@ const NAV_DADOS = [
   { href: '/dashboard/producao-ambulatorial',   label: 'Prod. Ambulatorial',  icon: <IconActivity /> },
   { href: '/dashboard/morbidade-hospitalar',    label: 'Morbidade Hosp.',     icon: <IconHospital /> },
   { href: '/dashboard/validacao-sisab',         label: 'Validação SISAB',     icon: <IconShieldCheck /> },
+  { href: '/dashboard/vigilancia-dengue',       label: 'Vigilância Dengue',   icon: <IconActivity /> },
 ]
 
 function ThemeToggle() {
@@ -303,33 +304,46 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [perfil, setPerfil] = useState<Perfil | null>(null)
   const [municipioOptions, setMunicipioOptions] = useState<MunicipioOption[]>([])
   const [loading, setLoading] = useState(true)
+  const [initError, setInitError] = useState(false)
 
   useEffect(() => {
     const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) { router.push('/'); return }
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) { router.push('/'); return }
 
-      // Usa API admin para evitar restrições de RLS nas queries de perfil e municípios
-      const res = await fetch(`/api/admin/usuarios/${session.user.id}`)
-      if (!res.ok) { console.error('Erro ao buscar perfil'); router.push('/'); return }
-      const perfilData = await res.json()
+        // Usa API admin para evitar restrições de RLS nas queries de perfil e municípios
+        const res = await fetch(`/api/admin/usuarios/${session.user.id}`)
+        if (!res.ok) {
+          console.error('Erro ao buscar perfil', res.status)
+          // Encerra a sessão para evitar loop de redirecionamento
+          await supabase.auth.signOut()
+          window.location.href = '/?sair=1'
+          return
+        }
+        const perfilData = await res.json()
 
-      setPerfil({
-        id: perfilData.id,
-        nome: perfilData.nome,
-        role: perfilData.role,
-        tema: perfilData.tema ?? 'dark',
-        municipio_ativo_id: perfilData.municipio_ativo_id,
-        municipios: perfilData.municipios ?? null,
-      })
+        setPerfil({
+          id: perfilData.id,
+          nome: perfilData.nome,
+          role: perfilData.role,
+          tema: perfilData.tema ?? 'dark',
+          municipio_ativo_id: perfilData.municipio_ativo_id,
+          municipios: perfilData.municipios ?? null,
+        })
 
-      const opts: MunicipioOption[] = []
-      if (perfilData.role === 'super_admin') opts.push({ id: null, nome: 'Todos os municípios' })
-      ;(perfilData.perfis_municipios ?? []).forEach((v: any) => {
-        if (v.municipios) opts.push({ id: v.municipios.id, nome: v.municipios.nome })
-      })
-      setMunicipioOptions(opts)
-      setLoading(false)
+        const opts: MunicipioOption[] = []
+        if (perfilData.role === 'super_admin') opts.push({ id: null, nome: 'Todos os municípios' })
+        ;(perfilData.perfis_municipios ?? []).forEach((v: any) => {
+          if (v.municipios) opts.push({ id: v.municipios.id, nome: v.municipios.nome })
+        })
+        setMunicipioOptions(opts)
+        setLoading(false)
+      } catch (err) {
+        console.error('Erro inesperado ao inicializar dashboard', err)
+        setInitError(true)
+        setLoading(false)
+      }
     }
     init()
   }, [router])
@@ -337,7 +351,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isSwitching, setIsSwitching] = useState(false)
   const [switchingTo, setSwitchingTo] = useState('')
 
-  const handleLogout = async () => { await supabase.auth.signOut(); router.push('/') }
+  const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = '/?sair=1' }
   const handleSwitch = (id: string | null) => {
     if (!perfil) return
     const nome = id === null ? 'Todos os municípios' : (municipioOptions.find(m => m.id === id)?.nome ?? '')
@@ -347,6 +361,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     // Oculta o overlay após 900ms — tempo suficiente para a página remontar e iniciar o loading próprio
     setTimeout(() => setIsSwitching(false), 900)
   }
+
+  if (initError) return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 }}>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      <p style={{ color: 'var(--text-secondary)', fontSize: 15, textAlign: 'center' }}>
+        Não foi possível carregar o painel. Verifique sua conexão e tente novamente.
+      </p>
+      <div style={{ display: 'flex', gap: 12 }}>
+        <button
+          onClick={() => window.location.reload()}
+          style={{ padding: '9px 20px', borderRadius: 8, border: '1px solid var(--border-input)', background: 'var(--bg-input)', color: 'var(--text-primary)', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit' }}
+        >
+          Tentar novamente
+        </button>
+        <button
+          onClick={async () => { await supabase.auth.signOut(); window.location.href = '/?sair=1' }}
+          style={{ padding: '9px 20px', borderRadius: 8, border: 'none', background: 'var(--danger)', color: '#fff', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit' }}
+        >
+          Sair
+        </button>
+      </div>
+    </div>
+  )
 
   if (loading || !perfil) return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

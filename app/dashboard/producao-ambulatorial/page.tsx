@@ -5,8 +5,10 @@
 // Produção Ambulatorial — SIASUS · 6 histórias · escopo por município ativo
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import TabNavigation, { TabItem } from '@/app/components/TabNavigation'
 import {
   ComposedChart, AreaChart, BarChart, ScatterChart,
   Bar, Area, Line, Scatter, XAxis, YAxis, CartesianGrid,
@@ -881,7 +883,16 @@ function AmbComparativo({ dados, todosOsPerfis, benchmarks }: {
 
 // ── página principal ──────────────────────────────────────────────────────────
 
-export default function ProducaoAmbulatorialPage() {
+const TABS: TabItem[] = [
+  { id: 'geral',        label: 'Visão Geral' },
+  { id: 'complexidade', label: 'Por Complexidade' },
+  { id: 'financeiro',   label: 'Financeiro' },
+  { id: 'comparativo',  label: 'Comparativo' },
+  { id: 'carater',      label: 'Caráter e Organização' },
+]
+
+function ProducaoAmbulatorialInner() {
+  const searchParams = useSearchParams()
   const [perfil, setPerfil] = useState<{ ibge: string; nome: string; uf: string } | null>(null)
   const [dados, setDados] = useState<DadosMunicipio | null>(null)
   const [benchmarks, setBenchmarks] = useState<Benchmarks | null>(null)
@@ -890,6 +901,10 @@ export default function ProducaoAmbulatorialPage() {
   const [erro, setErro] = useState<string | null>(null)
   const [ano, setAno] = useState<AnoFiltro>(2025)
   const [isMobile, setIsMobile] = useState(false)
+  const [activeTab, setActiveTab] = useState(() => {
+    const t = searchParams.get('tab')
+    return TABS.find(x => x.id === t) ? t! : 'geral'
+  })
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
@@ -963,7 +978,7 @@ export default function ProducaoAmbulatorialPage() {
       `}</style>
 
       {/* Cabeçalho */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
         <div>
           <h1 style={{ fontFamily: 'Syne, sans-serif', fontSize: 26, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
             Produção Ambulatorial
@@ -971,7 +986,7 @@ export default function ProducaoAmbulatorialPage() {
           <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>{municipioLabel} · SIASUS · 2024 vs 2025</p>
         </div>
 
-        {/* Seletor de ano (local) */}
+        {/* Seletor de ano (global — vale para todas as abas) */}
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {([2024, 2025, 'comparar'] as AnoFiltro[]).map(a => (
             <button key={String(a)} onClick={() => setAno(a)} style={{
@@ -985,6 +1000,13 @@ export default function ProducaoAmbulatorialPage() {
           ))}
         </div>
       </div>
+
+      {/* Abas — só exibe quando há dados */}
+      {!loading && !erro && dados && (
+        <div style={{ marginBottom: 24 }}>
+          <TabNavigation tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
+        </div>
+      )}
 
       {/* Estado: loading */}
       {loading && (
@@ -1010,38 +1032,48 @@ export default function ProducaoAmbulatorialPage() {
         </div>
       )}
 
-      {/* Dados carregados */}
+      {/* Conteúdo das abas */}
       {!loading && !erro && dados && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 14 : 20 }}>
 
-          {/* Linha 1: KPIs */}
-          <AmbKPIs dados={dados} benchmarks={benchmarks} ano={ano} />
+          {/* Aba: Visão Geral */}
+          {activeTab === 'geral' && (
+            <>
+              <AmbKPIs dados={dados} benchmarks={benchmarks} ano={ano} />
+              <AmbEvolucaoTotal dados={dados} benchmarks={benchmarks} ano={ano} />
+            </>
+          )}
 
-          {/* Linha 2: Evolução Complexidade (largura total) */}
-          <AmbEvolucaoComplexidade dados={dados} benchmarks={benchmarks} ano={ano} />
+          {/* Aba: Por Complexidade */}
+          {activeTab === 'complexidade' && (
+            <AmbEvolucaoComplexidade dados={dados} benchmarks={benchmarks} ano={ano} />
+          )}
 
-          {/* Linha 3: Evolução Total + Financeiro */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : '55% 1fr',
-            gap: isMobile ? 14 : 20,
-          }}>
-            <AmbEvolucaoTotal dados={dados} benchmarks={benchmarks} ano={ano} />
+          {/* Aba: Financeiro */}
+          {activeTab === 'financeiro' && (
             <AmbFinanceiro dados={dados} benchmarks={benchmarks} ano={ano} />
-          </div>
+          )}
 
-          {/* Linha 4: Caráter/Organização + Comparativo */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-            gap: isMobile ? 14 : 20,
-          }}>
-            <AmbCaraterOrganizacao dados={dados} isMobile={isMobile} />
+          {/* Aba: Comparativo */}
+          {activeTab === 'comparativo' && (
             <AmbComparativo dados={dados} todosOsPerfis={todosOsPerfis} benchmarks={benchmarks} />
-          </div>
+          )}
+
+          {/* Aba: Caráter e Organização */}
+          {activeTab === 'carater' && (
+            <AmbCaraterOrganizacao dados={dados} isMobile={isMobile} />
+          )}
 
         </div>
       )}
     </div>
+  )
+}
+
+export default function ProducaoAmbulatorialPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: 14 }}>Carregando…</div>}>
+      <ProducaoAmbulatorialInner />
+    </Suspense>
   )
 }
