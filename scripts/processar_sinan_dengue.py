@@ -38,10 +38,11 @@ def parse_num(v: str) -> int:
         return 0
 
 
-def ler_csv(nome: str) -> list[dict]:
+def ler_csv(nome: str, filtrar_sp: bool = False) -> list[dict]:
     """
     Lê CSV SINAN (ISO-8859-1, sep=;, aspas duplas duplicadas).
-    Filtra apenas municípios SP (ibge[:2] == '35').
+    Por padrão retorna todos os municípios do Brasil.
+    Se filtrar_sp=True, retorna apenas SP (ibge[:2]=='35').
     """
     path = BASE / nome
     with open(path, encoding="iso-8859-1") as f:
@@ -67,7 +68,7 @@ def ler_csv(nome: str) -> list[dict]:
         if not m:
             continue
         ibge6 = m.group(1)
-        if ibge6[:2] != "35":
+        if filtrar_sp and ibge6[:2] != "35":
             continue
 
         nome_mun = mun_raw[7:].strip() if len(mun_raw) > 7 else mun_raw
@@ -82,6 +83,47 @@ def ler_csv(nome: str) -> list[dict]:
 
 def arred(v: float, casas: int = 1) -> float:
     return round(v, casas)
+
+
+def ler_csvs_anuais(prefixo: str, anos: list[str]) -> dict[str, list[dict]]:
+    """
+    Lê dados_vigilancia/dengue/{prefixo}_{ano}.csv para cada ano.
+    Retorna {ano: [rows]} com todos os municípios do Brasil.
+    Arquivo ausente gera aviso no log e é pulado (não quebra).
+    """
+    resultado: dict[str, list[dict]] = {}
+    for ano in anos:
+        path = BASE / "dengue" / f"{prefixo}_{ano}.csv"
+        if not path.exists():
+            print(f"  [AVISO] {path.name} não encontrado, pulando.")
+            continue
+        # Arquivos exportados em CP850 (codepage DOS/DATAPREV)
+        with open(path, encoding="cp850") as f:
+            raw = f.read()
+        raw = raw.replace('""', '"').replace(';"', ';').replace('";', ';')
+        raw = raw.replace('\r\n', '\n').strip()
+        lines = raw.split('\n')
+        header = [h.strip().strip('"') for h in lines[0].split(';')]
+        rows: list[dict] = []
+        for line in lines[1:]:
+            line = line.strip().strip('"')
+            if not line:
+                continue
+            parts = line.split(';')
+            if len(parts) < 2:
+                continue
+            mun_raw = parts[0].strip().strip('"')
+            m = re.match(r'^(\d{6})', mun_raw)
+            if not m:
+                continue
+            ibge6 = m.group(1)
+            nome_mun = mun_raw[7:].strip() if len(mun_raw) > 7 else mun_raw
+            row: dict = {"ibge": ibge6, "nome": nome_mun}
+            for i, col in enumerate(header[1:], 1):
+                row[col] = parse_num(parts[i]) if i < len(parts) else 0
+            rows.append(row)
+        resultado[ano] = rows
+    return resultado
 
 
 # ---------------------------------------------------------------------------
@@ -104,14 +146,14 @@ def datas_semana(semana: int, ano: int) -> dict:
 # ---------------------------------------------------------------------------
 
 print("Lendo CSVs...")
-rows_anual  = ler_csv("sinan_dengue_anual.csv")
-rows_semana = ler_csv("sinan_dengue_semana_epidem.csv")
-rows_mensal = ler_csv("sinan_dengue_mensal.csv")
-rows_class  = ler_csv("sinan_dengue_class_final.csv")
-rows_evol   = ler_csv("sinan_dengue_evolucao.csv")
-rows_hosp   = ler_csv("sinan_dengue_ocorreu_hospitalizacao.csv")
-rows_fx     = ler_csv("sinan_dengue_faixa_etaria.csv")
-rows_sexo   = ler_csv("sinan_dengue_sexo.csv")
+rows_anual  = ler_csv("sinan_dengue_anual.csv")                             # Brasil
+rows_semana = ler_csv("sinan_dengue_semana_epidem.csv", filtrar_sp=True)    # SP (sazonalidade)
+rows_mensal = ler_csv("sinan_dengue_mensal.csv",        filtrar_sp=True)    # SP (sazonalidade)
+rows_class  = ler_csv("sinan_dengue_class_final.csv")                       # Brasil
+rows_evol   = ler_csv("sinan_dengue_evolucao.csv")                          # Brasil
+rows_hosp   = ler_csv("sinan_dengue_ocorreu_hospitalizacao.csv")            # Brasil
+rows_fx     = ler_csv("sinan_dengue_faixa_etaria.csv")                      # Brasil
+rows_sexo   = ler_csv("sinan_dengue_sexo.csv")                              # Brasil
 
 # Indexar por ibge para acesso O(1)
 def idx(rows: list[dict]) -> dict:
@@ -151,7 +193,7 @@ if rows_semana:
 else:
     SEM_COLS = []
 
-print(f"  {len(rows_anual)} municipios SP | {len(SEM_COLS)} semanas detectadas")
+print(f"  {len(rows_anual)} municípios BR | {len(SEM_COLS)} semanas SP detectadas")
 
 
 # ===========================================================================
@@ -427,18 +469,22 @@ print(f"  Salvo: {dest3}  ({len(perfil_out)} municipios)")
 
 
 # ===========================================================================
-# JSON 4 — dengue_benchmarks_sp.json
+# JSON 4 — dengue_benchmarks_nacional.json
 # ===========================================================================
 
-print("\nGerando dengue_benchmarks_sp.json ...")
+print("\nGerando dengue_benchmarks_nacional.json ...")
 
-# Totais anuais SP
-total_sp_por_ano = {}
+# Totais anuais Brasil
+total_brasil_por_ano: dict[str, int] = {}
 for ano in ANOS_UTEIS:
-    total_sp_por_ano[ano] = sum(r.get(ano, 0) for r in rows_anual)
-total_sp_por_ano[ANO_2026] = sum(r.get(ANO_2026, 0) for r in rows_anual)
+    total_brasil_por_ano[ano] = sum(r.get(ano, 0) for r in rows_anual)
+total_brasil_por_ano[ANO_2026] = sum(r.get(ANO_2026, 0) for r in rows_anual)
 
-ano_pico_sp = max(ANOS_UTEIS, key=lambda a: total_sp_por_ano[a])
+# Alias para compatibilidade com seções abaixo
+total_sp_por_ano = total_brasil_por_ano
+
+ano_pico_brasil = max(ANOS_UTEIS, key=lambda a: total_brasil_por_ano[a])
+ano_pico_sp = ano_pico_brasil  # alias
 
 # Sazonalidade SP
 total_sem_sp = sum(sum(r.get(c, 0) for r in rows_semana) for c in SEM_COLS)
@@ -484,37 +530,202 @@ for r in rows_class:
     if c_total > 0:
         pct_alarme_muns.append(c_alarme / c_total * 100)
 
-# Taxa hospitalização SP (Sim / (Sim+Não) — excluindo Ign/Branco)
-h_sim_sp = sum(r.get("Sim", 0) for r in rows_hosp)
-h_nao_sp = sum(r.get("Não", 0) for r in rows_hosp)
-taxa_hosp_sp = arred(h_sim_sp / (h_sim_sp + h_nao_sp) * 100, 2) if (h_sim_sp + h_nao_sp) > 0 else 0.0
+# Taxa hospitalização Brasil (Sim / (Sim+Não) — excluindo Ign/Branco)
+h_sim_br = sum(r.get("Sim", 0) for r in rows_hosp)
+h_nao_br = sum(r.get("Não", 0) for r in rows_hosp)
+taxa_hosp_br = arred(h_sim_br / (h_sim_br + h_nao_br) * 100, 2) if (h_sim_br + h_nao_br) > 0 else 0.0
 
-e_obito_sp  = sum(r.get("Óbito pelo agravo notificado", 0) for r in rows_evol)
-e_total_sp  = sum(r.get("Total", 0) for r in rows_evol)
-taxa_letal_sp = arred(e_obito_sp / e_total_sp * 100, 3) if e_total_sp > 0 else 0.0
+e_obito_br = sum(r.get("Óbito pelo agravo notificado", 0) for r in rows_evol)
+e_total_br = sum(r.get("Total", 0) for r in rows_evol)
+taxa_letal_br = arred(e_obito_br / e_total_br * 100, 3) if e_total_br > 0 else 0.0
 
-c_alarme_sp = sum(r.get("Dengue com sinais de alarme", 0) for r in rows_class)
-c_total_sp  = sum(r.get("Total", 0) for r in rows_class)
-pct_alarme_sp = arred(c_alarme_sp / c_total_sp * 100, 2) if c_total_sp > 0 else 0.0
+c_alarme_br = sum(r.get("Dengue com sinais de alarme", 0) for r in rows_class)
+c_total_br  = sum(r.get("Total", 0) for r in rows_class)
+pct_alarme_br = arred(c_alarme_br / c_total_br * 100, 2) if c_total_br > 0 else 0.0
+
+# Aliases para validação (usados abaixo)
+taxa_hosp_sp   = taxa_hosp_br
+taxa_letal_sp  = taxa_letal_br
+pct_alarme_sp  = pct_alarme_br
 
 benchmarks = {
-    "total_casos_sp_por_ano":         total_sp_por_ano,
-    "ano_pico_sp":                    ano_pico_sp,
+    "total_casos_brasil_por_ano":     total_brasil_por_ano,
+    "ano_pico_brasil":                ano_pico_brasil,
     "municipios_com_dado":            len(rows_anual),
+    # Sazonalidade mantida em SP (dados semana/mensal agregados disponíveis só para SP)
     "sazonalidade_sp": {
         "por_semana": sazon_semana_sp,
         "por_mes":    sazon_mes_sp,
     },
-    "taxa_hospitalizacao_sp_media":   taxa_hosp_sp,
-    "taxa_letalidade_sp_media":       taxa_letal_sp,
-    "pct_sinais_alarme_sp_media":     pct_alarme_sp,
+    "taxa_hospitalizacao_brasil_media":   taxa_hosp_br,
+    "taxa_letalidade_brasil_media":       taxa_letal_br,
+    "pct_sinais_alarme_brasil_media":     pct_alarme_br,
     "taxa_hospitalizacao_por_municipio_media": arred(media_sp(taxas_hosp_muns), 2),
     "taxa_letalidade_por_municipio_media":     arred(media_sp(taxas_letal_muns), 3),
 }
 
-dest4 = DEST / "dengue_benchmarks_sp.json"
+dest4 = DEST / "dengue_benchmarks_nacional.json"
 dest4.write_text(json.dumps(benchmarks, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  Salvo: {dest4}")
+
+
+# ===========================================================================
+# JSON 5 — dengue_perfil_anual.json
+# ===========================================================================
+
+print("\nGerando dengue_perfil_anual.json ...")
+
+ANOS_ANUAIS = ["2022", "2023", "2024", "2025", "2026"]
+
+print("  Carregando CSVs anuais de dengue/ ...")
+anual_mensal = ler_csvs_anuais("sinan_dengue_mensal",       ANOS_ANUAIS)
+anual_hosp   = ler_csvs_anuais("sinan_dengue_hospitalizacao", ANOS_ANUAIS)
+anual_class  = ler_csvs_anuais("sinan_dengue_classfinal",   ANOS_ANUAIS)
+anual_fx     = ler_csvs_anuais("sinan_dengue_faixaetaria",  ANOS_ANUAIS)
+anual_evol   = ler_csvs_anuais("sinan_dengue_evolucao",     ANOS_ANUAIS)
+anual_sexo   = ler_csvs_anuais("sinan_dengue_sexo",         ANOS_ANUAIS)
+
+def idx_ano(dados: dict[str, list[dict]]) -> dict[str, dict[str, dict]]:
+    """Retorna {ano: {ibge: row}}"""
+    return {ano: {r["ibge"]: r for r in rows} for ano, rows in dados.items()}
+
+idx_mensal_an = idx_ano(anual_mensal)
+idx_hosp_an   = idx_ano(anual_hosp)
+idx_class_an  = idx_ano(anual_class)
+idx_fx_an     = idx_ano(anual_fx)
+idx_evol_an   = idx_ano(anual_evol)
+idx_sexo_an   = idx_ano(anual_sexo)
+
+# Todos os IBGEs presentes em pelo menos um ano/tipo
+todos_ibges_an: set[str] = set()
+for d in [idx_mensal_an, idx_hosp_an, idx_class_an, idx_fx_an, idx_evol_an, idx_sexo_an]:
+    for rows_by_ibge in d.values():
+        todos_ibges_an.update(rows_by_ibge.keys())
+
+perfil_anual_out: dict = {}
+
+for ibge in sorted(todos_ibges_an):
+    por_ano: dict = {}
+
+    for ano in ANOS_ANUAIS:
+        rm  = idx_mensal_an.get(ano, {}).get(ibge, {})
+        rh  = idx_hosp_an  .get(ano, {}).get(ibge, {})
+        rc  = idx_class_an .get(ano, {}).get(ibge, {})
+        rfx = idx_fx_an    .get(ano, {}).get(ibge, {})
+        re_ = idx_evol_an  .get(ano, {}).get(ibge, {})
+        rs  = idx_sexo_an  .get(ano, {}).get(ibge, {})
+
+        if not any([rm, rh, rc, rfx, re_, rs]):
+            continue
+
+        # Mensal
+        total_mensal = rm.get("Total", 0) or sum(rm.get(mes, 0) for mes in MESES)
+        mensal_data  = {mes: rm.get(mes, 0) for mes in MESES}
+        mensal_data["total"] = total_mensal
+
+        # Hospitalização
+        h_sim   = rh.get("Sim", 0)
+        h_nao   = rh.get("Não", 0)
+        h_den   = h_sim + h_nao
+        taxa_hosp_an = arred(h_sim / h_den * 100, 2) if h_den > 0 else 0.0
+
+        # Evolução
+        e_total_an      = re_.get("Total", 0)
+        e_cura_an       = re_.get("Cura", 0)
+        e_obito_den_an  = re_.get("Óbito pelo agravo notificado", 0)
+        taxa_letal_an   = arred(e_obito_den_an / e_total_an * 100, 3) if e_total_an > 0 else 0.0
+
+        # Faixa etária
+        fx_grupos_an: dict[str, int] = {}
+        for grupo, colunas in FAIXAS_MAP.items():
+            fx_grupos_an[grupo] = sum(rfx.get(c, 0) for c in colunas)
+        fx_total_an = sum(fx_grupos_an.values())
+        faixa_data: dict = {}
+        faixa_dom_an   = "adulto_jovem"
+        faixa_dom_pct_an = 0.0
+        for grupo, q in fx_grupos_an.items():
+            dp = qtd_pct(q, fx_total_an)
+            faixa_data[grupo] = dp
+            if dp["pct"] > faixa_dom_pct_an:
+                faixa_dom_pct_an = dp["pct"]
+                faixa_dom_an     = grupo
+        faixa_data["faixa_dominante"] = faixa_dom_an
+
+        # Classificação
+        c_total_an  = rc.get("Total", 0)
+        c_simples_an = rc.get("Dengue", 0)
+        c_alarme_an  = rc.get("Dengue com sinais de alarme", 0)
+        c_grave_an   = rc.get("Dengue grave", 0)
+
+        # Sexo
+        s_masc_an = rs.get("Masculino", 0)
+        s_fem_an  = rs.get("Feminino", 0)
+        s_den_an  = s_masc_an + s_fem_an
+
+        por_ano[ano] = {
+            "mensal": mensal_data,
+            "evolucao": {
+                "cura":            qtd_pct(e_cura_an,      e_total_an),
+                "obito_dengue":    qtd_pct(e_obito_den_an, e_total_an),
+                "taxa_letalidade": taxa_letal_an,
+            },
+            "hospitalizacao": {
+                "sim":                 qtd_pct(h_sim, h_den),
+                "nao":                 qtd_pct(h_nao, h_den),
+                "taxa_hospitalizacao": taxa_hosp_an,
+            },
+            "faixa_etaria": faixa_data,
+            "sexo": {
+                "masculino": qtd_pct(s_masc_an, s_den_an),
+                "feminino":  qtd_pct(s_fem_an,  s_den_an),
+            },
+            "classificacao": {
+                "dengue_simples": qtd_pct(c_simples_an, c_total_an),
+                "sinais_alarme":  qtd_pct(c_alarme_an,  c_total_an),
+                "grave":          qtd_pct(c_grave_an,   c_total_an),
+            },
+        }
+
+    if not por_ano:
+        continue
+
+    # Variações 2024→2025 em pontos percentuais
+    ano_24 = por_ano.get("2024", {})
+    ano_25 = por_ano.get("2025", {})
+
+    th24 = ano_24.get("hospitalizacao", {}).get("taxa_hospitalizacao")
+    th25 = ano_25.get("hospitalizacao", {}).get("taxa_hospitalizacao")
+    var_hosp_an = arred(th25 - th24, 2) if th24 is not None and th25 is not None else None
+
+    tl24 = ano_24.get("evolucao", {}).get("taxa_letalidade")
+    tl25 = ano_25.get("evolucao", {}).get("taxa_letalidade")
+    var_letal_an = arred(tl25 - tl24, 3) if tl24 is not None and tl25 is not None else None
+
+    id24 = ano_24.get("faixa_etaria", {}).get("idoso", {}).get("pct")
+    id25 = ano_25.get("faixa_etaria", {}).get("idoso", {}).get("pct")
+    var_idosos_an = arred(id25 - id24, 1) if id24 is not None and id25 is not None else None
+
+    # Ano de maior hospitalização / letalidade
+    anos_com_dados = [a for a in ANOS_ANUAIS if a in por_ano]
+    ano_maior_hosp_an  = max(anos_com_dados,
+        key=lambda a: por_ano[a].get("hospitalizacao", {}).get("taxa_hospitalizacao", 0),
+        default=None)
+    ano_maior_letal_an = max(anos_com_dados,
+        key=lambda a: por_ano[a].get("evolucao", {}).get("taxa_letalidade", 0),
+        default=None)
+
+    perfil_anual_out[ibge] = {
+        "por_ano":                         por_ano,
+        "variacao_hospitalizacao_2425_pp": var_hosp_an,
+        "variacao_letalidade_2425_pp":     var_letal_an,
+        "variacao_idosos_2425_pp":         var_idosos_an,
+        "ano_maior_hospitalizacao":        ano_maior_hosp_an,
+        "ano_maior_letalidade":            ano_maior_letal_an,
+    }
+
+dest5 = DEST / "dengue_perfil_anual.json"
+dest5.write_text(json.dumps(perfil_anual_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  Salvo: {dest5}  ({len(perfil_anual_out)} municípios)")
 
 
 # ===========================================================================
@@ -525,21 +736,39 @@ print("\n" + "=" * 65)
 print("VALIDACAO FINAL")
 print("=" * 65)
 
-v2024 = total_sp_por_ano.get("2024", 0)
-v2025 = total_sp_por_ano.get("2025", 0)
-print(f"  SP 2024: {v2024:,}  (ref: 2.187.610)  {'[OK]' if v2024 == 2187610 else '[DIFF]'}")
-print(f"  SP 2025: {v2025:,}  (ref:   890.465)  {'[OK]' if v2025 == 890465  else '[DIFF]'}")
+# Totais Brasil
+v2024_br = total_brasil_por_ano.get("2024", 0)
+v2025_br = total_brasil_por_ano.get("2025", 0)
+print(f"  Brasil 2024: {v2024_br:,}")
+print(f"  Brasil 2025: {v2025_br:,}")
 
 pct_mar = next((m["pct_historico"] for m in sazon_mes_sp if m["mes"] == "Mar"), 0)
 pct_abr = next((m["pct_historico"] for m in sazon_mes_sp if m["mes"] == "Abr"), 0)
 print(f"  Mar + Abr SP: {pct_mar + pct_abr:.1f}%  (ref: ~47%)  {'[OK]' if 44 < pct_mar+pct_abr < 52 else '[DIFF]'}")
-print(f"  Taxa hospitalizacao SP: {taxa_hosp_sp:.2f}%  (ref: ~2.8%–3.5%)")
-print(f"  Taxa letalidade SP: {taxa_letal_sp:.3f}%")
-print(f"  % sinais de alarme SP: {pct_alarme_sp:.2f}%")
-print(f"  Ano pico SP: {ano_pico_sp}")
-print(f"  Municipios processados: {len(perfil_out)}")
+print(f"  Taxa hospitalizacao Brasil: {taxa_hosp_br:.2f}%")
+print(f"  Taxa letalidade Brasil: {taxa_letal_br:.3f}%")
+print(f"  % sinais de alarme Brasil: {pct_alarme_br:.2f}%")
+print(f"  Ano pico Brasil: {ano_pico_brasil}")
+print(f"  Municípios processados (perfil histórico): {len(perfil_out)}")
+print(f"  Municípios processados (perfil anual):     {len(perfil_anual_out)}")
 
-print("\n[FASE B CONCLUIDA] 4 JSONs gerados em dados_vigilancia/processados/")
+# Validação Araçatuba (350280) e Bilac (350570)
+for ibge_test, nome_test in [("350280", "Araçatuba"), ("350570", "Bilac")]:
+    dados_test = perfil_anual_out.get(ibge_test)
+    if not dados_test:
+        print(f"\n  [{nome_test} ({ibge_test})] NÃO encontrado no perfil_anual_out")
+        continue
+    print(f"\n  Validação {nome_test} ({ibge_test}):")
+    for ano in ["2022", "2023", "2024", "2025", "2026"]:
+        d = dados_test["por_ano"].get(ano)
+        if not d:
+            continue
+        th = d.get("hospitalizacao", {}).get("taxa_hospitalizacao", 0)
+        tl = d.get("evolucao", {}).get("taxa_letalidade", 0)
+        fd = d.get("faixa_etaria", {}).get("faixa_dominante", "—")
+        print(f"    {ano}: hosp={th:.2f}%  letal={tl:.3f}%  fx_dom={fd}")
+
+print("\n[FASE B CONCLUIDA] 5 JSONs gerados em dados_vigilancia/processados/")
 
 
 # ===========================================================================

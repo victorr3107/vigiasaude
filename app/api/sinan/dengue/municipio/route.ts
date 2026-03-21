@@ -36,9 +36,10 @@ export async function GET(req: Request) {
   const historicoDB    = readJson('dengue_historico_anual.json')
   const sazonalidadeDB = readJson('dengue_sazonalidade.json')
   const perfilDB       = readJson('dengue_perfil.json')
-  const benchmarksDB   = readJson('dengue_benchmarks_sp.json')
+  const benchmarksDB   = readJson('dengue_benchmarks_nacional.json') ?? readJson('dengue_benchmarks_sp.json')
   const semanaAnoRaw   = readJson('dengue_semana_por_ano.json')
   const semanaAnoMunDB = readJson('dengue_semana_por_ano_municipio.json')
+  const perfilAnualDB  = readJson('dengue_perfil_anual.json')
 
   if (!historicoDB || !benchmarksDB) {
     return NextResponse.json(
@@ -68,8 +69,12 @@ export async function GET(req: Request) {
     ? ((semanaAnoMunDB as Record<string, unknown>)[ibge6] ?? null)
     : null
 
+  const perfil_anual = perfilAnualDB
+    ? ((perfilAnualDB as Record<string, unknown>)[ibge6] ?? null)
+    : null
+
   return NextResponse.json(
-    { ibge: ibge6, historico, sazonalidade, perfil, benchmarks: benchmarksDB, semana_atual, semana_por_ano_nacional, semana_por_ano_municipio },
+    { ibge: ibge6, historico, sazonalidade, perfil, benchmarks: benchmarksDB, semana_atual, semana_por_ano_nacional, semana_por_ano_municipio, perfil_anual },
     { headers: { 'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400' } }
   )
 }

@@ -50,13 +50,44 @@ interface Perfil {
 interface BenchmarkMes  { mes: string; mes_nome: string; mes_num: number; pct_historico: number; casos_historicos: number }
 interface BenchmarkSem  { semana: number; pct_historico: number; casos_historicos: number }
 interface Benchmarks {
-  total_casos_sp_por_ano: Record<string, number>
-  ano_pico_sp: string
+  // nacional (dengue_benchmarks_nacional.json)
+  total_casos_brasil_por_ano: Record<string, number>
+  ano_pico_brasil: string
   municipios_com_dado: number
   sazonalidade_sp: { por_semana: BenchmarkSem[]; por_mes: BenchmarkMes[] }
-  taxa_hospitalizacao_sp_media: number
-  taxa_letalidade_sp_media: number
-  pct_sinais_alarme_sp_media: number
+  taxa_hospitalizacao_brasil_media: number
+  taxa_letalidade_brasil_media: number
+  pct_sinais_alarme_brasil_media: number
+  // legado SP (dengue_benchmarks_sp.json — fallback)
+  total_casos_sp_por_ano?: Record<string, number>
+  ano_pico_sp?: string
+  taxa_hospitalizacao_sp_media?: number
+  taxa_letalidade_sp_media?: number
+  pct_sinais_alarme_sp_media?: number
+}
+
+interface MensalAnual {
+  Jan: number; Fev: number; Mar: number; Abr: number; Mai: number; Jun: number
+  Jul: number; Ago: number; Set: number; Out: number; Nov: number; Dez: number
+  total: number
+}
+
+interface AnoPerfilAnual {
+  mensal: MensalAnual
+  evolucao: { cura: QtdPct; obito_dengue: QtdPct; taxa_letalidade: number }
+  hospitalizacao: { sim: QtdPct; nao: QtdPct; taxa_hospitalizacao: number }
+  faixa_etaria: { crianca: QtdPct; adolescente: QtdPct; adulto_jovem: QtdPct; adulto: QtdPct; idoso: QtdPct; faixa_dominante: string }
+  sexo: { masculino: QtdPct; feminino: QtdPct }
+  classificacao: { dengue_simples: QtdPct; sinais_alarme: QtdPct; grave: QtdPct }
+}
+
+interface PerfilAnual {
+  por_ano: Record<string, AnoPerfilAnual>
+  variacao_hospitalizacao_2425_pp: number | null
+  variacao_letalidade_2425_pp: number | null
+  variacao_idosos_2425_pp: number | null
+  ano_maior_hospitalizacao: string | null
+  ano_maior_letalidade: string | null
 }
 
 interface SemanaAtual {
@@ -87,6 +118,7 @@ interface DadosDengue {
   semana_atual: SemanaAtual | null
   semana_por_ano_nacional: SemanaAnoNacional | null
   semana_por_ano_municipio: SemanaAnoMunicipio | null
+  perfil_anual: PerfilAnual | null
 }
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
@@ -184,8 +216,8 @@ function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
   const acimaPico    = casos2025 > casos2024
 
   const taxaHosp  = perfil?.hospitalizacao.taxa_hospitalizacao ?? 0
-  const hospSP    = benchmarks.taxa_hospitalizacao_sp_media
-  const hospCor   = taxaHosp < hospSP * 0.9 ? 'var(--success)' : taxaHosp > hospSP * 1.1 ? 'var(--warning)' : 'var(--chart-blue)'
+  const hospBR    = benchmarks.taxa_hospitalizacao_brasil_media ?? benchmarks.taxa_hospitalizacao_sp_media ?? 0
+  const hospCor   = taxaHosp < hospBR * 0.9 ? 'var(--success)' : taxaHosp > hospBR * 1.1 ? 'var(--warning)' : 'var(--chart-blue)'
 
   const obitosDengue = perfil?.evolucao.obito_dengue.qtd ?? 0
   const taxaLetal    = perfil?.evolucao.taxa_letalidade ?? 0
@@ -302,7 +334,7 @@ function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
           <div className="kpi-value" style={{ color: hospCor }}>{fmtP(taxaHosp, 1)}</div>
           <div className="kpi-sub">dos casos precisaram de internação</div>
           <div className="kpi-badge" style={{ background: 'var(--bg-surface-2)', color: 'var(--text-muted)' }}>
-            Média SP: {fmtP(hospSP, 1)}
+            Média BR: {fmtP(hospBR, 1)}
           </div>
           <Sparkline valores={sparkVals} cor={hospCor} />
         </div>
@@ -598,8 +630,12 @@ function DengueComparativoSemanal({
 
 // ─── Aba 2: Tendência Histórica ───────────────────────────────────────────────
 
+const MESES_ABREV_LIST = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'] as const
+const CORES_ANUAL: Record<string, string> = { '2022': '#94a3b8', '2023': '#60a5fa', '2024': '#f59e0b', '2025': '#ef4444' }
+const ANOS_ANUAL_EXIB = ['2022','2023','2024','2025']
+
 function AbaTendencia({ dados }: { dados: DadosDengue }) {
-  const { historico, benchmarks, semana_por_ano_nacional, semana_por_ano_municipio, semana_atual } = dados
+  const { historico, benchmarks, semana_por_ano_nacional, semana_por_ano_municipio, semana_atual, perfil_anual } = dados
 
   // Prefere dados reais do município; fallback para nacional
   const dadosComparativos: SemanaAnoMunicipio | null =
@@ -627,16 +663,16 @@ function AbaTendencia({ dados }: { dados: DadosDengue }) {
     variacoes.push({ de: anos[i - 1].ano, para: anos[i].ano, pct })
   }
 
-  // Comparativo SP normalizado base 100 (2019)
-  const casosSpPorAno = benchmarks.total_casos_sp_por_ano
+  // Comparativo BR normalizado base 100 (2019)
+  const casosBrPorAno = benchmarks.total_casos_brasil_por_ano ?? benchmarks.total_casos_sp_por_ano ?? {}
   const base2019Mun = historico.por_ano.find(a => a.ano === '2019')?.casos ?? 0
-  const base2019SP  = casosSpPorAno['2019'] ?? 1
+  const base2019BR  = casosBrPorAno['2019'] ?? 1
   const compData = historico.por_ano
-    .filter(a => !a.parcial && casosSpPorAno[a.ano] !== undefined)
+    .filter(a => !a.parcial && casosBrPorAno[a.ano] !== undefined)
     .map(a => ({
       ano:       a.ano,
       municipio: base2019Mun > 0 ? Math.round(a.casos / base2019Mun * 100) : 0,
-      sp:        Math.round(casosSpPorAno[a.ano] / base2019SP * 100),
+      br:        Math.round(casosBrPorAno[a.ano] / base2019BR * 100),
     }))
 
   // Narrativa
@@ -700,9 +736,9 @@ function AbaTendencia({ dados }: { dados: DadosDengue }) {
           </div>
         </div>
 
-        {/* Comparativo SP */}
+        {/* Comparativo BR */}
         <div className="card-section">
-          <div className="section-title">Comparativo com SP (base 100 em 2019)</div>
+          <div className="section-title">Comparativo com BR (base 100 em 2019)</div>
           {base2019Mun > 0
             ? <ResponsiveContainer width="100%" height={160}>
                 <LineChart data={compData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
@@ -711,7 +747,7 @@ function AbaTendencia({ dados }: { dados: DadosDengue }) {
                   <YAxis tick={{ fontSize: 10, fill: 'var(--text-dim)' }} axisLine={false} tickLine={false} />
                   <RTooltip content={<TooltipBox />} />
                   <Line dataKey="municipio" name="Município" stroke="var(--accent)" strokeWidth={2} dot={{ r: 3 }} />
-                  <Line dataKey="sp"        name="SP"        stroke="var(--chart-slate)" strokeWidth={1.5} strokeDasharray="4 2" dot={false} />
+                  <Line dataKey="br"        name="Brasil"    stroke="var(--chart-slate)" strokeWidth={1.5} strokeDasharray="4 2" dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             : <div style={{ fontSize: 12, color: 'var(--text-muted)', padding: '20px 0' }}>Sem dados em 2019 para normalização.</div>
@@ -730,7 +766,52 @@ function AbaTendencia({ dados }: { dados: DadosDengue }) {
         {var2324 !== null && ` A transição 2023→2024 representou ${varLabel(var2324)}.`}
       </div>
 
-      {/* Mudança 3 — Comparativo semanal (municipal ou nacional) */}
+      {/* Sazonalidade mensal por ano (usa dengue_perfil_anual.json) */}
+      {perfil_anual && (() => {
+        const anosDisp = ANOS_ANUAL_EXIB.filter(a => perfil_anual.por_ano[a]?.mensal)
+        if (anosDisp.length === 0) return null
+        const mensalData = MESES_ABREV_LIST.map(mes => {
+          const row: Record<string, string | number> = { mes }
+          for (const ano of anosDisp) {
+            row[ano] = perfil_anual.por_ano[ano]?.mensal?.[mes as keyof MensalAnual] ?? 0
+          }
+          return row
+        })
+        return (
+          <div className="card-section">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+              <div className="section-title" style={{ marginBottom: 0 }}>
+                Sazonalidade Mensal por Ano — {historico.nome} ({anosDisp[0]}–{anosDisp[anosDisp.length - 1]})
+              </div>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {anosDisp.map(ano => (
+                  <span key={ano} style={{ fontSize: 11, color: CORES_ANUAL[ano], display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ width: 10, height: 10, borderRadius: 2, background: CORES_ANUAL[ano], display: 'inline-block' }} />
+                    {ano}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={mensalData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} barCategoryGap="20%" barGap={2}>
+                <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 2" />
+                <XAxis dataKey="mes" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: 'var(--text-dim)' }} axisLine={false} tickLine={false}
+                  tickFormatter={v => v >= 1000 ? `${(v/1000).toFixed(0)}k` : String(v)} />
+                <RTooltip content={<TooltipBox />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
+                {anosDisp.map(ano => (
+                  <Bar key={ano} dataKey={ano} name={ano} fill={CORES_ANUAL[ano]} fillOpacity={0.85} radius={[2, 2, 0, 0]} />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+            <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 6 }}>
+              Casos notificados por mês e ano. Fonte: SINAN (dengue_perfil_anual). Dados reais do município.
+            </div>
+          </div>
+        )
+      })()}
+
+      {/* Comparativo semanal (municipal ou nacional) */}
       {dadosComparativos && (
         <DengueComparativoSemanal
           dados={dadosComparativos}
@@ -935,23 +1016,56 @@ function AbaSazonalidade({ dados }: { dados: DadosDengue }) {
   )
 }
 
+// ─── Toggle helper ────────────────────────────────────────────────────────────
+
+type ModoComparar = 'historico' | 'comparar'
+
+function ModoToggle({ modo, onChange }: { modo: ModoComparar; onChange: (m: ModoComparar) => void }) {
+  return (
+    <div style={{ display: 'flex', gap: 3, marginBottom: 10 }}>
+      {(['historico', 'comparar'] as const).map(m => (
+        <button
+          key={m}
+          onClick={() => onChange(m)}
+          style={{
+            fontSize: 10, padding: '2px 9px', borderRadius: 20, cursor: 'pointer', fontFamily: 'inherit',
+            border: `1px solid ${modo === m ? 'var(--accent)' : 'var(--border-input)'}`,
+            background: modo === m ? 'var(--accent-subtle)' : 'transparent',
+            color: modo === m ? 'var(--accent)' : 'var(--text-muted)',
+            transition: 'all 0.12s',
+          }}
+        >
+          {m === 'historico' ? 'Acumulado histórico' : 'Comparar por ano'}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 // ─── Aba 4: Perfil dos Casos ──────────────────────────────────────────────────
 
 function AbaPerfil({ dados }: { dados: DadosDengue }) {
-  const { perfil, benchmarks, historico } = dados
+  const { perfil, benchmarks, historico, perfil_anual } = dados
+
+  const [modoClass,  setModoClass]  = useState<ModoComparar>('historico')
+  const [modoLetal,  setModoLetal]  = useState<ModoComparar>('historico')
+  const [modoHosp,   setModoHosp]   = useState<ModoComparar>('historico')
+  const [modoFaixa,  setModoFaixa]  = useState<ModoComparar>('historico')
+  const [modoSexo,   setModoSexo]   = useState<ModoComparar>('historico')
 
   if (!perfil) {
     return <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)', fontSize: 14 }}>Dados de perfil não disponíveis.</div>
   }
 
   const { classificacao, evolucao, hospitalizacao, faixa_etaria, sexo } = perfil
-  const hospSP = benchmarks.taxa_hospitalizacao_sp_media
+  const hospBR = benchmarks.taxa_hospitalizacao_brasil_media ?? benchmarks.taxa_hospitalizacao_sp_media ?? 0
+  const letalBR = benchmarks.taxa_letalidade_brasil_media ?? benchmarks.taxa_letalidade_sp_media ?? 0
 
   const hospCor =
-    hospitalizacao.taxa_hospitalizacao < hospSP * 0.9 ? 'var(--success)' :
-    hospitalizacao.taxa_hospitalizacao > hospSP * 1.1 ? 'var(--warning)' : 'var(--chart-blue)'
+    hospitalizacao.taxa_hospitalizacao < hospBR * 0.9 ? 'var(--success)' :
+    hospitalizacao.taxa_hospitalizacao > hospBR * 1.1 ? 'var(--warning)' : 'var(--chart-blue)'
 
-  const faixaOrdem: { key: keyof typeof faixa_etaria; label: string }[] = [
+  const faixaOrdem: { key: keyof Omit<typeof faixa_etaria, 'faixa_dominante' | 'faixa_dominante_label'>; label: string }[] = [
     { key: 'crianca',      label: 'Crianças (0–9)' },
     { key: 'adolescente',  label: 'Adolescentes (10–19)' },
     { key: 'adulto_jovem', label: 'Adultos jovens (20–39)' },
@@ -961,127 +1075,333 @@ function AbaPerfil({ dados }: { dados: DadosDengue }) {
 
   const sexoMaior = sexo.masculino.pct >= 50 ? 'masculina' : 'feminina'
 
+  // Anos disponíveis no perfil_anual (excluindo 2026 parcial)
+  const anosAnual = perfil_anual
+    ? ANOS_ANUAL_EXIB.filter(a => perfil_anual.por_ano[a])
+    : []
+  const temAnual = anosAnual.length > 0
+
+  // Helpers para montar series de linha/barra por ano
+  const hospAnualData = anosAnual.map(ano => ({
+    ano,
+    taxa: perfil_anual!.por_ano[ano]!.hospitalizacao?.taxa_hospitalizacao ?? 0,
+  }))
+  const letalAnualData = anosAnual.map(ano => ({
+    ano,
+    taxa: perfil_anual!.por_ano[ano]!.evolucao?.taxa_letalidade ?? 0,
+  }))
+  const classAnualData = anosAnual.map(ano => {
+    const c = perfil_anual!.por_ano[ano]!.classificacao
+    return { ano, alarme: c?.sinais_alarme?.pct ?? 0, grave: c?.grave?.pct ?? 0 }
+  })
+  const faixaAnualData = faixaOrdem.map(({ key, label }) => {
+    const row: Record<string, string | number> = { faixa: label }
+    for (const ano of anosAnual) {
+      row[ano] = (perfil_anual!.por_ano[ano]!.faixa_etaria as Record<string, QtdPct>)[key]?.pct ?? 0
+    }
+    return row
+  })
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16, animation: 'fadeIn 0.3s ease' }}>
 
       {/* Coluna 1 — Gravidade */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+        {/* Classificação dos casos */}
         <div className="card-section">
-          <div className="section-title">Classificação dos Casos</div>
-          {[
-            { label: 'Dengue simples',      valor: classificacao.dengue_simples, cor: 'var(--success)' },
-            { label: 'Sinais de alarme',    valor: classificacao.sinais_alarme,  cor: 'var(--warning)' },
-            { label: 'Dengue grave',        valor: classificacao.grave,          cor: 'var(--danger)' },
-            { label: 'Inconclusivo',        valor: classificacao.inconclusivo,   cor: 'var(--chart-slate)' },
-          ].map(({ label, valor, cor }) => (
-            <div key={label} style={{ marginBottom: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
-                <span>{label}</span>
-                <span style={{ fontWeight: 600 }}>{fmtP(valor.pct)} <span style={{ color: 'var(--text-dim)' }}>({fmt(valor.qtd)})</span></span>
+          <div className="section-title" style={{ marginBottom: 6 }}>Classificação dos Casos</div>
+          {temAnual && <ModoToggle modo={modoClass} onChange={setModoClass} />}
+
+          {modoClass === 'historico' ? (
+            <>
+              {[
+                { label: 'Dengue simples',   valor: classificacao.dengue_simples, cor: 'var(--success)' },
+                { label: 'Sinais de alarme', valor: classificacao.sinais_alarme,  cor: 'var(--warning)' },
+                { label: 'Dengue grave',     valor: classificacao.grave,          cor: 'var(--danger)' },
+                { label: 'Inconclusivo',     valor: classificacao.inconclusivo,   cor: 'var(--chart-slate)' },
+              ].map(({ label, valor, cor }) => (
+                <div key={label} style={{ marginBottom: 8 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
+                    <span>{label}</span>
+                    <span style={{ fontWeight: 600 }}>{fmtP(valor.pct)} <span style={{ color: 'var(--text-dim)' }}>({fmt(valor.qtd)})</span></span>
+                  </div>
+                  <div style={{ height: 8, background: 'var(--bg-surface-2)', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${Math.min(valor.pct, 100)}%`, background: cor, borderRadius: 4 }} />
+                  </div>
+                </div>
+              ))}
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8, lineHeight: 1.5 }}>
+                Dengue com sinais de alarme indica casos que exigiram acompanhamento intensivo.
               </div>
-              <div style={{ height: 8, background: 'var(--bg-surface-2)', borderRadius: 4, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${Math.min(valor.pct, 100)}%`, background: cor, borderRadius: 4 }} />
-              </div>
-            </div>
-          ))}
-          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8, lineHeight: 1.5 }}>
-            Dengue com sinais de alarme indica casos que exigiram acompanhamento intensivo e representam risco de evolução para dengue grave.
-          </div>
+            </>
+          ) : (
+            <>
+              <ResponsiveContainer width="100%" height={160}>
+                <LineChart data={classAnualData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                  <CartesianGrid stroke="var(--border)" strokeDasharray="4 2" />
+                  <XAxis dataKey="ano" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: 'var(--text-dim)' }} axisLine={false} tickLine={false}
+                    tickFormatter={v => `${v.toFixed(0)}%`} />
+                  <RTooltip content={<TooltipBox />} />
+                  <Line dataKey="alarme" name="Sinais de alarme %" stroke="var(--warning)" strokeWidth={2} dot={{ r: 3 }} />
+                  <Line dataKey="grave"  name="Dengue grave %"    stroke="var(--danger)"  strokeWidth={2} dot={{ r: 3 }} />
+                </LineChart>
+              </ResponsiveContainer>
+              {(() => {
+                const d25 = classAnualData.find(d => d.ano === '2025')
+                const d24 = classAnualData.find(d => d.ano === '2024')
+                if (!d25 || !d24) return null
+                const varAlarme = (d25.alarme - d24.alarme).toFixed(1)
+                const sinal = parseFloat(varAlarme) >= 0 ? '+' : ''
+                return (
+                  <div style={{ marginTop: 8, padding: '8px 10px', background: 'var(--bg-surface-2)', borderRadius: 6, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    Em 2025, sinais de alarme: <strong>{d25.alarme.toFixed(1)}%</strong> · dengue grave: <strong>{d25.grave.toFixed(1)}%</strong>.
+                    {' '}Variação alarme 2024→2025: <strong style={{ color: parseFloat(varAlarme) > 0 ? 'var(--danger)' : 'var(--success)' }}>{sinal}{varAlarme}pp</strong>.
+                  </div>
+                )
+              })()}
+            </>
+          )}
         </div>
 
+        {/* Taxa de Letalidade */}
         <div className="card-section">
-          <div className="section-title">Taxa de Letalidade</div>
-          {evolucao.obito_dengue.qtd === 0
-            ? <div className="kpi-badge" style={{ background: 'var(--success-subtle)', color: 'var(--success)', display: 'inline-block', fontSize: 12, padding: '6px 10px' }}>
-                Nenhum óbito registrado
-              </div>
-            : <>
-                <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--danger)', marginBottom: 4 }}>
-                  {evolucao.taxa_letalidade.toFixed(3)}%
+          <div className="section-title" style={{ marginBottom: 6 }}>Taxa de Letalidade</div>
+          {temAnual && <ModoToggle modo={modoLetal} onChange={setModoLetal} />}
+
+          {modoLetal === 'historico' ? (
+            evolucao.obito_dengue.qtd === 0
+              ? <div className="kpi-badge" style={{ background: 'var(--success-subtle)', color: 'var(--success)', display: 'inline-block', fontSize: 12, padding: '6px 10px' }}>
+                  Nenhum óbito registrado
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  {fmt(evolucao.obito_dengue.qtd)} óbitos por dengue
-                  {evolucao.obito_outra_causa.qtd > 0 && ` · ${fmt(evolucao.obito_outra_causa.qtd)} por outra causa`}
+              : <>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--danger)', marginBottom: 4 }}>
+                    {evolucao.taxa_letalidade.toFixed(3)}%
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                    {fmt(evolucao.obito_dengue.qtd)} óbitos por dengue
+                    {evolucao.obito_outra_causa.qtd > 0 && ` · ${fmt(evolucao.obito_outra_causa.qtd)} por outra causa`}
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
+                    Média BR: {letalBR.toFixed(3)}%
+                  </div>
+                </>
+          ) : (
+            <>
+              <ResponsiveContainer width="100%" height={140}>
+                <LineChart data={letalAnualData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                  <CartesianGrid stroke="var(--border)" strokeDasharray="4 2" />
+                  <XAxis dataKey="ano" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: 'var(--text-dim)' }} axisLine={false} tickLine={false}
+                    tickFormatter={v => `${v.toFixed(2)}%`} />
+                  <RTooltip content={<TooltipBox />} />
+                  <Line dataKey="taxa" name="Letalidade %" stroke="var(--danger)" strokeWidth={2} dot={{ r: 3 }} />
+                </LineChart>
+              </ResponsiveContainer>
+              {perfil_anual?.ano_maior_letalidade && (
+                <div style={{ marginTop: 6, fontSize: 11, color: 'var(--text-muted)' }}>
+                  Maior letalidade: <strong style={{ color: 'var(--text-secondary)' }}>{perfil_anual.ano_maior_letalidade}</strong>
+                  {perfil_anual.variacao_letalidade_2425_pp !== null && (
+                    <> · Variação 2024→2025: <strong style={{ color: (perfil_anual.variacao_letalidade_2425_pp ?? 0) > 0 ? 'var(--danger)' : 'var(--success)' }}>
+                      {(perfil_anual.variacao_letalidade_2425_pp ?? 0) >= 0 ? '+' : ''}{perfil_anual.variacao_letalidade_2425_pp?.toFixed(3)}pp
+                    </strong></>
+                  )}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
-                  Média SP: {benchmarks.taxa_letalidade_sp_media.toFixed(3)}%
-                </div>
-              </>
-          }
+              )}
+            </>
+          )}
         </div>
       </div>
 
       {/* Coluna 2 — Hospitalização */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div className="card-section">
-          <div className="section-title">Hospitalização</div>
-          <div style={{ textAlign: 'center', padding: '12px 0' }}>
-            <div style={{ fontSize: 32, fontWeight: 700, color: hospCor }}>{fmtP(hospitalizacao.taxa_hospitalizacao, 1)}</div>
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>dos casos precisaram de internação</div>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{fmt(hospitalizacao.sim.qtd)} hospitalizações registradas</div>
-          </div>
+          <div className="section-title" style={{ marginBottom: 6 }}>Hospitalização</div>
+          {temAnual && <ModoToggle modo={modoHosp} onChange={setModoHosp} />}
 
-          {/* Barra proporcional */}
-          <div style={{ height: 18, borderRadius: 9, overflow: 'hidden', background: 'var(--bg-surface-2)', display: 'flex', marginTop: 8 }}>
-            <div style={{ height: '100%', width: `${hospitalizacao.sim.pct}%`, background: hospCor, transition: 'width 0.8s ease' }} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--text-dim)', marginTop: 4 }}>
-            <span>Hospitalizados {fmtP(hospitalizacao.sim.pct)}</span>
-            <span>Não hospitalizados {fmtP(hospitalizacao.nao.pct)}</span>
-          </div>
-
-          <div style={{ marginTop: 12, padding: '10px 12px', background: 'var(--bg-surface-2)', borderRadius: 6, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Para cada 100 casos notificados,{' '}
-            <strong style={{ color: hospCor }}>{hospitalizacao.taxa_hospitalizacao.toFixed(1)}</strong> precisaram de internação.
-            {' '}Média SP: <strong>{fmtP(hospSP, 1)}</strong>
-          </div>
+          {modoHosp === 'historico' ? (
+            <>
+              <div style={{ textAlign: 'center', padding: '12px 0' }}>
+                <div style={{ fontSize: 32, fontWeight: 700, color: hospCor }}>{fmtP(hospitalizacao.taxa_hospitalizacao, 1)}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>dos casos precisaram de internação</div>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{fmt(hospitalizacao.sim.qtd)} hospitalizações registradas</div>
+              </div>
+              <div style={{ height: 18, borderRadius: 9, overflow: 'hidden', background: 'var(--bg-surface-2)', display: 'flex', marginTop: 8 }}>
+                <div style={{ height: '100%', width: `${hospitalizacao.sim.pct}%`, background: hospCor, transition: 'width 0.8s ease' }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--text-dim)', marginTop: 4 }}>
+                <span>Hospitalizados {fmtP(hospitalizacao.sim.pct)}</span>
+                <span>Não hospitalizados {fmtP(hospitalizacao.nao.pct)}</span>
+              </div>
+              <div style={{ marginTop: 12, padding: '10px 12px', background: 'var(--bg-surface-2)', borderRadius: 6, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                Para cada 100 casos notificados,{' '}
+                <strong style={{ color: hospCor }}>{hospitalizacao.taxa_hospitalizacao.toFixed(1)}</strong> precisaram de internação.
+                {' '}Média BR: <strong>{fmtP(hospBR, 1)}</strong>
+              </div>
+            </>
+          ) : (
+            <>
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={hospAnualData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                  <CartesianGrid stroke="var(--border)" strokeDasharray="4 2" />
+                  <XAxis dataKey="ano" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: 'var(--text-dim)' }} axisLine={false} tickLine={false}
+                    tickFormatter={v => `${v.toFixed(0)}%`} />
+                  <RTooltip content={<TooltipBox />} />
+                  <ReferenceLine y={hospBR} stroke="var(--chart-slate)" strokeDasharray="3 2"
+                    label={{ value: 'média BR', position: 'insideTopRight', fontSize: 9, fill: 'var(--text-dim)' }} />
+                  <Line dataKey="taxa" name="Taxa hosp. %" stroke="var(--chart-blue)" strokeWidth={2.5} dot={{ r: 4, fill: 'var(--chart-blue)' }} />
+                </LineChart>
+              </ResponsiveContainer>
+              {(() => {
+                const d25 = hospAnualData.find(d => d.ano === '2025')
+                const d24 = hospAnualData.find(d => d.ano === '2024')
+                if (!d25) return null
+                const varPP = d24 ? (d25.taxa - d24.taxa) : null
+                return (
+                  <div style={{ marginTop: 8, padding: '8px 10px', background: 'var(--bg-surface-2)', borderRadius: 6, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    Taxa 2025: <strong>{d25.taxa.toFixed(1)}%</strong> · Média BR: <strong>{hospBR.toFixed(1)}%</strong>
+                    {varPP !== null && (
+                      <> · 2024→2025: <strong style={{ color: varPP > 0 ? 'var(--danger)' : 'var(--success)' }}>
+                        {varPP >= 0 ? '+' : ''}{varPP.toFixed(1)}pp
+                      </strong></>
+                    )}
+                    {perfil_anual?.ano_maior_hospitalizacao && (
+                      <> · Pico: <strong>{perfil_anual.ano_maior_hospitalizacao}</strong></>
+                    )}
+                  </div>
+                )
+              })()}
+            </>
+          )}
         </div>
       </div>
 
       {/* Coluna 3 — Perfil dos Pacientes */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+        {/* Faixa Etária */}
         <div className="card-section">
-          <div className="section-title">Faixa Etária</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginTop: 4 }}>
-            {faixaOrdem.map(({ key, label }) => {
-              const item = faixa_etaria[key] as QtdPct
-              const isDominante = key === faixa_etaria.faixa_dominante
-              return (
-                <div key={key}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 3 }}>
-                    <span style={{ color: isDominante ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: isDominante ? 600 : 400 }}>
-                      {label}{isDominante ? ' ★' : ''}
-                    </span>
-                    <span style={{ color: 'var(--text-secondary)', fontWeight: isDominante ? 600 : 400 }}>
-                      {fmtP(item.pct)}
-                    </span>
+          <div className="section-title" style={{ marginBottom: 6 }}>Faixa Etária</div>
+          {temAnual && <ModoToggle modo={modoFaixa} onChange={setModoFaixa} />}
+
+          {modoFaixa === 'historico' ? (
+            <>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginTop: 4 }}>
+                {faixaOrdem.map(({ key, label }) => {
+                  const item = faixa_etaria[key] as QtdPct
+                  const isDominante = key === faixa_etaria.faixa_dominante
+                  return (
+                    <div key={key}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 3 }}>
+                        <span style={{ color: isDominante ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: isDominante ? 600 : 400 }}>
+                          {label}{isDominante ? ' ★' : ''}
+                        </span>
+                        <span style={{ color: 'var(--text-secondary)', fontWeight: isDominante ? 600 : 400 }}>{fmtP(item.pct)}</span>
+                      </div>
+                      <div style={{ height: 7, background: 'var(--bg-surface-2)', borderRadius: 3, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${Math.min(item.pct, 100)}%`, background: isDominante ? 'var(--accent)' : 'var(--chart-blue)', borderRadius: 3 }} />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8 }}>
+                ★ Faixa dominante: {faixa_etaria.faixa_dominante_label} ({fmtP((faixa_etaria[faixa_etaria.faixa_dominante as keyof typeof faixa_etaria] as QtdPct).pct)})
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                {anosAnual.map(ano => (
+                  <span key={ano} style={{ fontSize: 10, color: CORES_ANUAL[ano], display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 2, background: CORES_ANUAL[ano], display: 'inline-block' }} />
+                    {ano}
+                  </span>
+                ))}
+              </div>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={faixaAnualData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }} barCategoryGap="15%" barGap={1}>
+                  <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 2" />
+                  <XAxis dataKey="faixa" tick={{ fontSize: 8, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false}
+                    tickFormatter={v => v.split(' ')[0]} />
+                  <YAxis tick={{ fontSize: 9, fill: 'var(--text-dim)' }} axisLine={false} tickLine={false}
+                    tickFormatter={v => `${v.toFixed(0)}%`} />
+                  <RTooltip content={<TooltipBox />} />
+                  {anosAnual.map(ano => (
+                    <Bar key={ano} dataKey={ano} name={ano} fill={CORES_ANUAL[ano]} fillOpacity={0.85} radius={[2, 2, 0, 0]} />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+              {(() => {
+                const dom25 = perfil_anual?.por_ano['2025']?.faixa_etaria?.faixa_dominante
+                const dom24 = perfil_anual?.por_ano['2024']?.faixa_etaria?.faixa_dominante
+                if (!dom25) return null
+                return (
+                  <div style={{ marginTop: 6, fontSize: 11, color: 'var(--text-muted)' }}>
+                    Faixa dominante 2025: <strong style={{ color: 'var(--text-secondary)' }}>{dom25}</strong>
+                    {dom24 && dom24 !== dom25 && <> · 2024: <strong>{dom24}</strong></>}
+                    {perfil_anual?.variacao_idosos_2425_pp !== null && perfil_anual?.variacao_idosos_2425_pp !== undefined && (
+                      <> · Idosos 2024→2025: <strong style={{ color: (perfil_anual.variacao_idosos_2425_pp) > 0 ? 'var(--warning)' : 'var(--success)' }}>
+                        {perfil_anual.variacao_idosos_2425_pp >= 0 ? '+' : ''}{perfil_anual.variacao_idosos_2425_pp.toFixed(1)}pp
+                      </strong></>
+                    )}
                   </div>
-                  <div style={{ height: 7, background: 'var(--bg-surface-2)', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${Math.min(item.pct, 100)}%`, background: isDominante ? 'var(--accent)' : 'var(--chart-blue)', borderRadius: 3 }} />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8 }}>
-            ★ Faixa dominante: {faixa_etaria.faixa_dominante_label} ({fmtP((faixa_etaria[faixa_etaria.faixa_dominante as keyof typeof faixa_etaria] as QtdPct).pct)})
-          </div>
+                )
+              })()}
+            </>
+          )}
         </div>
 
+        {/* Distribuição por Sexo */}
         <div className="card-section">
-          <div className="section-title">Distribuição por Sexo</div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-            {[
-              { label: 'Masculino', item: sexo.masculino, cor: 'var(--chart-blue)' },
-              { label: 'Feminino',  item: sexo.feminino,  cor: 'var(--chart-purple)' },
-            ].map(({ label, item, cor }) => (
-              <div key={label} style={{ flex: 1, textAlign: 'center', padding: '10px 8px', background: 'var(--bg-surface-2)', borderRadius: 8 }}>
-                <div style={{ fontSize: 20, fontWeight: 700, color: cor }}>{fmtP(item.pct)}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{label}</div>
-                <div style={{ fontSize: 10, color: 'var(--text-dim)' }}>{fmt(item.qtd)}</div>
-              </div>
-            ))}
-          </div>
+          <div className="section-title" style={{ marginBottom: 6 }}>Distribuição por Sexo</div>
+          {temAnual && <ModoToggle modo={modoSexo} onChange={setModoSexo} />}
+
+          {modoSexo === 'historico' ? (
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              {[
+                { label: 'Masculino', item: sexo.masculino, cor: 'var(--chart-blue)' },
+                { label: 'Feminino',  item: sexo.feminino,  cor: 'var(--chart-purple)' },
+              ].map(({ label, item, cor }) => (
+                <div key={label} style={{ flex: 1, textAlign: 'center', padding: '10px 8px', background: 'var(--bg-surface-2)', borderRadius: 8 }}>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: cor }}>{fmtP(item.pct)}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{label}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text-dim)' }}>{fmt(item.qtd)}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ marginTop: 4, overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+                <thead>
+                  <tr>
+                    {['Ano','Masc. %','Fem. %','Total'].map(h => (
+                      <th key={h} style={{ textAlign: 'right', padding: '4px 6px', color: 'var(--text-muted)', fontWeight: 600, borderBottom: '1px solid var(--border)' }}>
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {anosAnual.map(ano => {
+                    const s = perfil_anual!.por_ano[ano]!.sexo
+                    if (!s) return null
+                    const total = (s.masculino?.qtd ?? 0) + (s.feminino?.qtd ?? 0)
+                    return (
+                      <tr key={ano} style={{ borderBottom: '1px solid var(--border)' }}>
+                        <td style={{ padding: '4px 6px', color: CORES_ANUAL[ano], fontWeight: 700 }}>{ano}</td>
+                        <td style={{ textAlign: 'right', padding: '4px 6px', color: 'var(--chart-blue)' }}>{(s.masculino?.pct ?? 0).toFixed(1)}%</td>
+                        <td style={{ textAlign: 'right', padding: '4px 6px', color: 'var(--chart-purple)' }}>{(s.feminino?.pct ?? 0).toFixed(1)}%</td>
+                        <td style={{ textAlign: 'right', padding: '4px 6px', color: 'var(--text-secondary)' }}>{fmt(total)}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* Orientação de campanha */}
