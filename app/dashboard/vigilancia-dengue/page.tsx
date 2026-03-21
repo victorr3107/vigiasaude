@@ -64,6 +64,20 @@ interface SemanaAtual {
   badge_tipo: 'inicio' | 'ativa' | 'baixa' | 'pre'
 }
 
+interface SemanaAnoItem { semana: number; [ano: string]: number }
+
+interface SemanaAnoNacional {
+  _meta: { anos_disponiveis: string[]; total_semanas: number; nota: string }
+  por_semana: SemanaAnoItem[]
+  pico_por_ano: Record<string, { semana: number; casos: number }>
+}
+
+interface SemanaAnoMunicipio {
+  por_semana: SemanaAnoItem[]
+  pico_por_ano: Record<string, { semana: number; casos: number }>
+  anos_disponiveis: string[]
+}
+
 interface DadosDengue {
   ibge: string
   historico: Historico
@@ -71,6 +85,8 @@ interface DadosDengue {
   perfil: Perfil | null
   benchmarks: Benchmarks
   semana_atual: SemanaAtual | null
+  semana_por_ano_nacional: SemanaAnoNacional | null
+  semana_por_ano_municipio: SemanaAnoMunicipio | null
 }
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
@@ -137,16 +153,35 @@ const TooltipBox = ({ active, payload, label }: { active?: boolean; payload?: { 
   )
 }
 
+// ─── Sparkline ────────────────────────────────────────────────────────────────
+
+function Sparkline({ valores, cor }: { valores: number[]; cor: string }) {
+  if (valores.length < 2) return null
+  const max = Math.max(...valores)
+  const min = Math.min(...valores)
+  const range = max - min || 1
+  const W = 64, H = 22
+  const pts = valores
+    .map((v, i) => `${(i / (valores.length - 1)) * W},${H - ((v - min) / range) * (H - 2) - 1}`)
+    .join(' ')
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', marginTop: 6, overflow: 'visible' }}>
+      <polyline points={pts} fill="none" stroke={cor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity={0.8} />
+    </svg>
+  )
+}
+
 // ─── Aba 1: Visão Geral ───────────────────────────────────────────────────────
 
 function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
   const { historico, perfil, benchmarks, semana_atual } = dados
 
   // KPIs
-  const casos2025  = historico.por_ano.find(a => a.ano === '2025')?.casos ?? 0
-  const casos2024  = historico.por_ano.find(a => a.ano === '2024')?.casos ?? 0
-  const varVsPico  = historico.var_2024_2025_pct
-  const acimaPico  = casos2025 > casos2024
+  const casos2025    = historico.por_ano.find(a => a.ano === '2025')?.casos ?? 0
+  const casos2024    = historico.por_ano.find(a => a.ano === '2024')?.casos ?? 0
+  const casos2026p   = historico.por_ano.find(a => a.ano === '2026')?.casos ?? 0
+  const varVsPico    = historico.var_2024_2025_pct
+  const acimaPico    = casos2025 > casos2024
 
   const taxaHosp  = perfil?.hospitalizacao.taxa_hospitalizacao ?? 0
   const hospSP    = benchmarks.taxa_hospitalizacao_sp_media
@@ -154,6 +189,14 @@ function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
 
   const obitosDengue = perfil?.evolucao.obito_dengue.qtd ?? 0
   const taxaLetal    = perfil?.evolucao.taxa_letalidade ?? 0
+
+  // Sparkline — tendência dos casos por ano (excluindo parcial 2026)
+  const sparkVals = historico.por_ano.filter(a => !a.parcial).map(a => a.casos)
+
+  // 4B — Pior ano: detectar se é o mais recente ano completo
+  const anosCompletos = historico.por_ano.filter(a => !a.parcial)
+  const anoMaisRecente = anosCompletos[anosCompletos.length - 1]?.ano ?? ''
+  const picoEhRecente  = historico.ano_pico === anoMaisRecente
 
   // Mini histórico
   const miniData = historico.por_ano.map(a => ({
@@ -163,9 +206,9 @@ function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
     color: a.parcial ? 'var(--chart-slate)' : barColor(a.casos, historico.media_historica),
   }))
 
-  // Alerta sazonal
-  const alertaBg   = semana_atual ? badgeInfo(semana_atual.badge_tipo).bg    : 'var(--info-subtle)'
-  const alertaCor  = semana_atual ? badgeInfo(semana_atual.badge_tipo).color  : 'var(--info)'
+  // 4A — Alerta sazonal (movido para topo)
+  const alertaBg   = semana_atual ? badgeInfo(semana_atual.badge_tipo).bg   : 'var(--info-subtle)'
+  const alertaCor  = semana_atual ? badgeInfo(semana_atual.badge_tipo).color : 'var(--info)'
   let alertaTitulo = ''
   let alertaTexto  = ''
 
@@ -173,24 +216,49 @@ function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
     const se = semana_atual
     const datas = dataRange(se.inicio, se.fim)
     if (se.badge_tipo === 'ativa') {
-      alertaTitulo = `Temporada ativa — SE ${se.semana}/${se.ano}`
-      alertaTexto = `O pico histórico ocorre entre as semanas 8 e 15. Hoje estamos na SE ${se.semana}/${se.ano} (${datas}).`
+      alertaTitulo = `⚠ Temporada ativa — SE ${se.semana}/${se.ano}`
+      alertaTexto  = `O pico histórico ocorre entre as semanas 8 e 15. Hoje estamos na SE ${se.semana}/${se.ano} (${datas}). Reforce ações de controle e atenção clínica.`
     } else if (se.badge_tipo === 'inicio') {
       alertaTitulo = `Início de temporada — SE ${se.semana}/${se.ano}`
-      alertaTexto = `A temporada de dengue está começando. Historicamente o pico ocorre nas semanas 8–15.`
+      alertaTexto  = `A temporada de dengue está começando (${datas}). Historicamente o pico ocorre nas semanas 8–15.`
     } else if (se.badge_tipo === 'pre') {
       alertaTitulo = `Pré-temporada — SE ${se.semana}/${se.ano}`
-      alertaTexto = `Intensifique ações de controle vetorial agora. O pico histórico começa na semana 8 (${datas}).`
+      alertaTexto  = `Intensifique ações de controle vetorial agora. O pico histórico começa na semana 8 (${datas}).`
     } else {
       alertaTitulo = `Período de baixa transmissão — SE ${se.semana}/${se.ano}`
-      alertaTexto = `Aproveite para ações de controle vetorial antes da próxima temporada (a partir da semana 8).`
+      alertaTexto  = `Aproveite para ações de controle vetorial antes da próxima temporada (a partir da semana 8).`
     }
   }
 
+  // 4D — Contexto atual: comparativo de anos no mesmo período parcial
+  const seAtual = semana_atual?.semana ?? null
+  const anoAtual = semana_atual?.ano ?? null
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'fadeIn 0.3s ease' }}>
-      {/* KPIs */}
+
+      {/* 4A — Alerta sazonal no topo (borda lateral colorida) */}
+      {semana_atual && (
+        <div style={{
+          background: alertaBg,
+          borderLeft: `4px solid ${alertaCor}`,
+          border: `1px solid ${alertaCor}30`,
+          borderLeftColor: alertaCor,
+          borderRadius: 8,
+          padding: '14px 18px',
+        }}>
+          <div style={{ fontWeight: 700, fontSize: 13, color: alertaCor, marginBottom: 5 }}>
+            {alertaTitulo}
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.65 }}>
+            {alertaTexto}
+          </div>
+        </div>
+      )}
+
+      {/* KPIs — 4 cards com sparklines (4C) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+
         {/* Card 1 — Casos 2025 */}
         <div className="kpi-card">
           <div className="kpi-label">Casos em 2025</div>
@@ -201,8 +269,10 @@ function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
           <div className="kpi-badge" style={{ background: acimaPico ? 'var(--danger-subtle)' : 'var(--success-subtle)', color: acimaPico ? 'var(--danger)' : 'var(--success)' }}>
             {acimaPico ? 'Acima de 2024' : 'Abaixo do pico de 2024'}
           </div>
+          <Sparkline valores={sparkVals} cor={acimaPico ? 'var(--danger)' : 'var(--success)'} />
         </div>
-        {/* Card 2 — Pior Ano */}
+
+        {/* Card 2 — Pior Ano (4B) */}
         <div className="kpi-card">
           <div className="kpi-label">Pior Ano Histórico</div>
           <div className="kpi-value">{historico.ano_pico}</div>
@@ -212,7 +282,20 @@ function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
               {(historico.casos_ano_pico / historico.media_historica).toFixed(1)}× a média histórica
             </div>
           )}
+          {/* 4B — nota quando o pior ano é o mais recente */}
+          {picoEhRecente && (
+            <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{
+                fontSize: 10, fontWeight: 600, color: 'var(--warning)',
+                background: 'var(--warning-subtle)', padding: '1px 7px', borderRadius: 20,
+              }}>
+                Ano em andamento
+              </span>
+            </div>
+          )}
+          <Sparkline valores={sparkVals} cor="var(--danger)" />
         </div>
+
         {/* Card 3 — Hospitalização */}
         <div className="kpi-card">
           <div className="kpi-label">Taxa de Hospitalização</div>
@@ -221,7 +304,9 @@ function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
           <div className="kpi-badge" style={{ background: 'var(--bg-surface-2)', color: 'var(--text-muted)' }}>
             Média SP: {fmtP(hospSP, 1)}
           </div>
+          <Sparkline valores={sparkVals} cor={hospCor} />
         </div>
+
         {/* Card 4 — Óbitos */}
         <div className="kpi-card">
           <div className="kpi-label">Óbitos por Dengue</div>
@@ -235,6 +320,7 @@ function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
                 <div className="kpi-sub">{taxaLetal.toFixed(3)}% taxa de letalidade</div>
               </>
           }
+          <Sparkline valores={sparkVals} cor={obitosDengue === 0 ? 'var(--success)' : 'var(--danger)'} />
         </div>
       </div>
 
@@ -264,14 +350,50 @@ function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
         </div>
       </div>
 
-      {/* Alerta sazonal */}
-      {semana_atual && (
-        <div style={{ background: alertaBg, border: `1px solid ${alertaCor}40`, borderRadius: 8, padding: '14px 16px' }}>
-          <div style={{ fontWeight: 600, fontSize: 13, color: alertaCor, marginBottom: 6 }}>
-            {alertaTitulo}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            {alertaTexto}
+      {/* 4D — Card Contexto Atual */}
+      {seAtual && anoAtual && (
+        <div className="card-section">
+          <div className="section-title">Contexto Atual</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+            {/* SE atual */}
+            <div style={{ padding: '10px 12px', background: 'var(--bg-surface-2)', borderRadius: 8 }}>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Semana Epidemiológica</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>SE {seAtual}/{anoAtual}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
+                {dataRange(semana_atual!.inicio, semana_atual!.fim)}
+              </div>
+              <div style={{ fontSize: 11, color: alertaCor, marginTop: 4, fontWeight: 600 }}>
+                {badgeInfo(semana_atual!.badge_tipo).texto}
+              </div>
+            </div>
+            {/* 2026 parcial */}
+            {casos2026p > 0 && (
+              <div style={{ padding: '10px 12px', background: 'var(--bg-surface-2)', borderRadius: 8 }}>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Casos em {anoAtual} (parcial)</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>{fmt(casos2026p)}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
+                  até SE {seAtual}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
+                  Dados do SINAN — atualização não é em tempo real
+                </div>
+              </div>
+            )}
+            {/* Comparativo mesmo período anos anteriores */}
+            {casos2025 > 0 && casos2026p > 0 && (
+              <div style={{ padding: '10px 12px', background: 'var(--bg-surface-2)', borderRadius: 8 }}>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Referência — ano anterior</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                  2025: {fmt(casos2025)} casos (ano completo)
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginTop: 4 }}>
+                  2024: {fmt(casos2024)} casos (ano completo)
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 6 }}>
+                  Comparativo semana a semana disponível em Sazonalidade
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -279,10 +401,213 @@ function AbaVisaoGeral({ dados }: { dados: DadosDengue }) {
   )
 }
 
+// ─── Comparativo Semanal Nacional ─────────────────────────────────────────────
+
+const COR_ANO: Record<string, { stroke: string; width: number; opacity: number; dash?: string }> = {
+  '2019': { stroke: '#64748b', width: 1,   opacity: 0.40 },
+  '2020': { stroke: '#64748b', width: 1,   opacity: 0.40 },
+  '2021': { stroke: '#64748b', width: 1,   opacity: 0.40 },
+  '2022': { stroke: '#94a3b8', width: 1,   opacity: 0.50 },
+  '2023': { stroke: '#60a5fa', width: 1.5, opacity: 0.70 },
+  '2024': { stroke: '#f59e0b', width: 2.5, opacity: 1.00 },
+  '2025': { stroke: '#ef4444', width: 2.5, opacity: 1.00 },
+  '2026': { stroke: '#94a3b8', width: 1.5, opacity: 0.60, dash: '4 3' },
+}
+
+const ANOS_DESTAQUE = ['2024', '2025']
+const ANOS_PADRAO   = ['2023', '2024', '2025', '2026']
+
+function DengueComparativoSemanal({
+  dados, semana_atual, nomeLocal, isNacional,
+}: {
+  dados: SemanaAnoMunicipio
+  semana_atual: SemanaAtual | null
+  nomeLocal: string
+  isNacional?: boolean
+}) {
+  const { por_semana, pico_por_ano, anos_disponiveis: anosDisp } = dados
+
+  const [anosVisiveis, setAnosVisiveis] = useState<string[]>(
+    ANOS_PADRAO.filter(a => anosDisp.includes(a))
+  )
+  const [expandido, setExpandido] = useState(false)
+
+  const toggleAno = (ano: string) =>
+    setAnosVisiveis(v => v.includes(ano) ? v.filter(a => a !== ano) : [...v, ano].sort())
+
+  const toggleTodos = () => {
+    if (expandido) {
+      setAnosVisiveis(ANOS_PADRAO.filter(a => anosDisp.includes(a)))
+      setExpandido(false)
+    } else {
+      setAnosVisiveis([...anosDisp])
+      setExpandido(true)
+    }
+  }
+
+  // Tooltip customizado
+  const TooltipComp = ({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color?: string; stroke?: string }[]; label?: string }) => {
+    if (!active || !payload?.length) return null
+    const semNum = parseInt(String(label ?? ''))
+    const calAno = semana_atual?.ano ?? 2026
+    const semDados = por_semana.find(s => s.semana === semNum)
+    const datas = semDados
+      ? (() => {
+          // Usa datas do calendário 2026 como referência
+          const sem2026 = dados.por_semana.find(s => s.semana === semNum)
+          return sem2026 ? `SE ${semNum}` : `SE ${semNum}`
+        })()
+      : `SE ${semNum}`
+    return (
+      <div style={{ background: 'var(--bg-modal)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 14px', fontSize: 12, minWidth: 180 }}>
+        <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>{datas}/{calAno}</div>
+        {payload
+          .filter(p => anosVisiveis.includes(p.name))
+          .sort((a, b) => b.value - a.value)
+          .map(p => (
+            <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, color: p.stroke ?? 'var(--text-secondary)', marginBottom: 2 }}>
+              <span style={{ fontWeight: ANOS_DESTAQUE.includes(p.name) ? 700 : 400 }}>{p.name}:</span>
+              <strong>{fmt(p.value)}</strong>
+            </div>
+          ))
+        }
+      </div>
+    )
+  }
+
+  // Narrativa dinâmica
+  const pico25 = pico_por_ano['2025']
+  const pico24 = pico_por_ano['2024']
+  let narrativa = ''
+  if (pico25 && pico24 && (pico25.casos > 0 || pico24.casos > 0)) {
+    const local = isNacional ? 'nacional' : `em ${nomeLocal}`
+    narrativa = `Em 2025, o pico ${local} ocorreu na SE ${pico25.semana} com ${fmt(pico25.casos)} casos. `
+    narrativa += `Em 2024, o pico foi na SE ${pico24.semana} com ${fmt(pico24.casos)} casos. `
+    if (pico25.casos > pico24.casos) narrativa += `2025 superou 2024 no pico semanal.`
+    else narrativa += `2025 teve pico inferior a 2024.`
+  }
+
+  const seAtual = semana_atual?.semana
+
+  return (
+    <div className="card-section" style={{ marginTop: 0 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+        <div>
+          <div className="section-title" style={{ marginBottom: 2 }}>
+            Comparativo por Semana Epidemiológica — {isNacional ? 'Brasil (dados nacionais)' : nomeLocal}
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+            Casos notificados por semana epidemiológica{isNacional ? ' — referência nacional (SINAN)' : ` no município (SINAN)`}. Selecione os anos:
+          </div>
+        </div>
+        <button
+          onClick={toggleTodos}
+          style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, border: '1px solid var(--border-input)', background: 'var(--bg-input)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit' }}
+        >
+          {expandido ? 'Menos anos' : 'Ver todos os anos'}
+        </button>
+      </div>
+
+      {/* Pills de ano */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
+        {anosDisp.map(ano => {
+          const cfg = COR_ANO[ano] ?? { stroke: '#94a3b8', width: 1, opacity: 0.5 }
+          const ativo = anosVisiveis.includes(ano)
+          return (
+            <button
+              key={ano}
+              onClick={() => toggleAno(ano)}
+              style={{
+                fontSize: 11, fontWeight: ANOS_DESTAQUE.includes(ano) ? 700 : 400,
+                padding: '3px 12px', borderRadius: 20, cursor: 'pointer', fontFamily: 'inherit',
+                border: `1.5px solid ${ativo ? cfg.stroke : 'var(--border-input)'}`,
+                background: ativo ? `${cfg.stroke}18` : 'transparent',
+                color: ativo ? cfg.stroke : 'var(--text-muted)',
+                transition: 'all 0.15s',
+              }}
+            >
+              {ano}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Gráfico de linhas */}
+      <ResponsiveContainer width="100%" height={240}>
+        <LineChart data={por_semana} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
+          <CartesianGrid stroke="var(--border)" strokeDasharray="3 2" />
+          <XAxis dataKey="semana" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false}
+            tickFormatter={v => v % 5 === 0 ? `SE ${v}` : ''} />
+          <YAxis tick={{ fontSize: 10, fill: 'var(--text-dim)' }} axisLine={false} tickLine={false}
+            tickFormatter={v => v >= 1000 ? `${(v/1000).toFixed(0)}k` : String(v)} />
+          <RTooltip content={<TooltipComp />} cursor={{ stroke: 'var(--border-strong)', strokeWidth: 1 }} />
+          {/* Linha vertical — semana atual */}
+          {seAtual && (
+            <ReferenceLine x={seAtual} stroke="var(--accent)" strokeWidth={1.5} strokeDasharray="3 2"
+              label={{ value: `SE ${seAtual}`, position: 'top', fontSize: 9, fill: 'var(--accent)' }} />
+          )}
+          {anosDisp.map(ano => {
+            const cfg = COR_ANO[ano] ?? { stroke: '#94a3b8', width: 1, opacity: 0.5 }
+            if (!anosVisiveis.includes(ano)) return null
+            return (
+              <Line
+                key={ano}
+                dataKey={ano}
+                name={ano}
+                stroke={cfg.stroke}
+                strokeWidth={cfg.width}
+                strokeOpacity={cfg.opacity}
+                strokeDasharray={cfg.dash}
+                dot={false}
+                activeDot={ANOS_DESTAQUE.includes(ano) ? { r: 4, fill: cfg.stroke } : false}
+              />
+            )
+          })}
+        </LineChart>
+      </ResponsiveContainer>
+
+      {/* Marcadores de pico para anos em destaque */}
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 8 }}>
+        {ANOS_DESTAQUE.filter(a => anosVisiveis.includes(a) && pico_por_ano[a]).map(ano => {
+          const cfg = COR_ANO[ano]!
+          const p   = pico_por_ano[ano]
+          return (
+            <div key={ano} style={{ fontSize: 11, color: cfg.stroke, fontWeight: 600 }}>
+              ▲ {ano} pico: SE {p.semana} · {fmt(p.casos)} casos
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Narrativa */}
+      {narrativa && (
+        <div style={{ marginTop: 10, padding: '10px 14px', background: 'var(--bg-surface-2)', borderRadius: 7, borderLeft: '3px solid var(--chart-slate)', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          {narrativa}
+        </div>
+      )}
+
+      {/* Nota */}
+      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-dim)', lineHeight: 1.5 }}>
+        {isNacional
+          ? `Cada linha representa casos notificados por semana epidemiológica no Brasil. Fonte: SINAN. Os dados de ${nomeLocal} seguem o mesmo padrão sazonal mas em escala municipal.`
+          : `Cada linha representa casos notificados por semana epidemiológica em ${nomeLocal}. Fonte: SINAN. Dados reais por notificação municipal.`}
+      </div>
+    </div>
+  )
+}
+
 // ─── Aba 2: Tendência Histórica ───────────────────────────────────────────────
 
 function AbaTendencia({ dados }: { dados: DadosDengue }) {
-  const { historico, benchmarks } = dados
+  const { historico, benchmarks, semana_por_ano_nacional, semana_por_ano_municipio, semana_atual } = dados
+
+  // Prefere dados reais do município; fallback para nacional
+  const dadosComparativos: SemanaAnoMunicipio | null =
+    semana_por_ano_municipio ??
+    (semana_por_ano_nacional
+      ? { ...semana_por_ano_nacional, anos_disponiveis: semana_por_ano_nacional._meta.anos_disponiveis }
+      : null)
+  const isNacionalFallback = !semana_por_ano_municipio && !!semana_por_ano_nacional
   const media = historico.media_historica
 
   const barData = historico.por_ano.map(a => ({
@@ -404,14 +729,47 @@ function AbaTendencia({ dados }: { dados: DadosDengue }) {
           : ''}.
         {var2324 !== null && ` A transição 2023→2024 representou ${varLabel(var2324)}.`}
       </div>
+
+      {/* Mudança 3 — Comparativo semanal (municipal ou nacional) */}
+      {dadosComparativos && (
+        <DengueComparativoSemanal
+          dados={dadosComparativos}
+          semana_atual={semana_atual}
+          nomeLocal={historico.nome}
+          isNacional={isNacionalFallback}
+        />
+      )}
     </div>
   )
 }
 
 // ─── Aba 3: Sazonalidade ──────────────────────────────────────────────────────
 
+// Meses do calendário (SE → mês) — para agrupar semanas em meses
+const MESES_ABREV = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+
+function calcMesesPorAno(semanaAno: SemanaAnoMunicipio): { mes: string; [ano: string]: number | string }[] {
+  // Agrupa casos por mês usando os índices das SEs: SE 1-4 ≈ Jan, SE 5-9 ≈ Fev etc.
+  // Aproximação simples: cada mês tem ~4-4.5 semanas
+  // SE 1-5→Jan, 6-9→Fev, 10-13→Mar, 14-18→Abr, 19-22→Mai, 23-26→Jun,
+  //   27-31→Jul, 32-35→Ago, 36-39→Set, 40-44→Out, 45-48→Nov, 49-53→Dez
+  const SE_MES = [0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,8,8,9,9,9,9,9,10,10,10,10,11,11,11,11,11]
+  const anos = ['2022','2023','2024','2025']
+  const result: { mes: string; [ano: string]: number | string }[] = MESES_ABREV.map(m => ({ mes: m }))
+
+  for (const se of semanaAno.por_semana) {
+    const mesIdx = SE_MES[se.semana - 1] ?? 11
+    for (const ano of anos) {
+      const val = se[ano] as number ?? 0
+      const atual = (result[mesIdx][ano] as number) ?? 0
+      result[mesIdx][ano] = atual + val
+    }
+  }
+  return result
+}
+
 function AbaSazonalidade({ dados }: { dados: DadosDengue }) {
-  const { sazonalidade, semana_atual } = dados
+  const { sazonalidade, semana_atual, semana_por_ano_nacional, semana_por_ano_municipio } = dados
 
   if (!sazonalidade) {
     return <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)', fontSize: 14 }}>Dados de sazonalidade não disponíveis.</div>
@@ -444,8 +802,59 @@ function AbaSazonalidade({ dados }: { dados: DadosDengue }) {
     destaque: s.casos_historicos > mediaSem * 1.5,
   }))
 
+  // Mudança 5 — dados mensais por ano (municipal preferencial, fallback nacional)
+  const semanaAnoMensal: SemanaAnoMunicipio | null =
+    semana_por_ano_municipio ??
+    (semana_por_ano_nacional
+      ? { ...semana_por_ano_nacional, anos_disponiveis: semana_por_ano_nacional._meta.anos_disponiveis }
+      : null)
+  const dadosMensais = semanaAnoMensal ? calcMesesPorAno(semanaAnoMensal) : null
+  const isMensalNacional = !semana_por_ano_municipio && !!semana_por_ano_nacional
+  const CORES_BARRAS: Record<string, string> = {
+    '2022': '#94a3b8',
+    '2023': '#60a5fa',
+    '2024': '#f59e0b',
+    '2025': '#ef4444',
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'fadeIn 0.3s ease' }}>
+      {/* Mudança 5 — Barras agrupadas por mês e ano */}
+      {dadosMensais && (
+        <div className="card-section">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+            <div className="section-title" style={{ marginBottom: 0 }}>
+              Casos por Mês e Ano — {isMensalNacional ? 'Brasil' : dados.historico.nome} (2022–2025)
+            </div>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              {Object.entries(CORES_BARRAS).map(([ano, cor]) => (
+                <span key={ano} style={{ fontSize: 11, color: cor, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: 2, background: cor, display: 'inline-block' }} />
+                  {ano}
+                </span>
+              ))}
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={dadosMensais} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} barCategoryGap="20%" barGap={2}>
+              <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 2" />
+              <XAxis dataKey="mes" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--text-dim)' }} axisLine={false} tickLine={false}
+                tickFormatter={v => v >= 1000 ? `${(v/1000).toFixed(0)}k` : String(v)} />
+              <RTooltip content={<TooltipBox />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
+              {Object.entries(CORES_BARRAS).map(([ano, cor]) => (
+                <Bar key={ano} dataKey={ano} name={ano} fill={cor} fillOpacity={0.85} radius={[2, 2, 0, 0]} />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+          <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 6 }}>
+            {isMensalNacional
+              ? 'Casos nacionais (Brasil) agrupados por mês estimado a partir das semanas epidemiológicas. Fonte: SINAN.'
+              : `Casos de ${dados.historico.nome} agrupados por mês estimado a partir das semanas epidemiológicas. Fonte: SINAN.`}
+          </div>
+        </div>
+      )}
+
       {/* Nota */}
       <div style={{ background: 'var(--info-subtle)', border: '1px solid var(--info)40', borderRadius: 8, padding: '10px 14px', fontSize: 12, color: 'var(--text-secondary)' }}>
         <strong style={{ color: 'var(--info)' }}>Padrão histórico acumulado</strong> — os dados representam o somatório de todos os anos disponíveis.
@@ -807,7 +1216,7 @@ function VigilanciaDeingueInner() {
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 8 }}>
             <div>
               <h1 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: 'var(--text-primary)', margin: 0, lineHeight: 1.3 }}>
-                Dengue — Vigilância Epidemiológica
+                Vigilância — Dengue
               </h1>
               <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 4 }}>
                 {nomeLocal} · SP · SINAN

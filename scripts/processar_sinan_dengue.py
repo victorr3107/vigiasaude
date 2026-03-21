@@ -540,3 +540,227 @@ print(f"  Ano pico SP: {ano_pico_sp}")
 print(f"  Municipios processados: {len(perfil_out)}")
 
 print("\n[FASE B CONCLUIDA] 4 JSONs gerados em dados_vigilancia/processados/")
+
+
+# ===========================================================================
+# FASE C — semana × ano (agregado geral do CSV sinan_dengue_semana_por_ano)
+# ===========================================================================
+
+print("\n" + "=" * 65)
+print("FASE C — dengue_semana_por_ano.json")
+print("=" * 65)
+
+CSV_SEM_ANO = BASE / "sinan_dengue_semana_por_ano.csv"
+
+if not CSV_SEM_ANO.exists():
+    print("  [SKIP] sinan_dengue_semana_por_ano.csv não encontrado.")
+else:
+    ANOS_ALVO = [str(a) for a in range(2019, 2027)]  # 2019-2026
+
+    with open(CSV_SEM_ANO, encoding="iso-8859-1") as f:
+        raw_sem = f.read()
+
+    # Normalizar aspas duplas duplicadas
+    raw_sem = raw_sem.replace('""', '"').replace(';"', ';').replace('";', ';')
+    raw_sem = raw_sem.replace('\r\n', '\n').strip()
+
+    linhas_sem = raw_sem.split('\n')
+    header_sem = [h.strip().strip('"') for h in linhas_sem[0].split(';')]
+
+    # Índices das colunas dos anos alvo
+    idx_anos = {}
+    for ano in ANOS_ALVO:
+        try:
+            idx_anos[ano] = header_sem.index(ano)
+        except ValueError:
+            pass  # ano não presente no CSV
+
+    anos_disponiveis = sorted(idx_anos.keys())
+
+    por_semana: list[dict] = []
+    pico_por_ano: dict[str, dict] = {a: {"semana": 0, "casos": 0} for a in anos_disponiveis}
+
+    for linha in linhas_sem[1:]:
+        linha = linha.strip().strip('"')
+        if not linha:
+            continue
+        cols = [c.strip().strip('"') for c in linha.split(';')]
+        nome_sem = cols[0] if cols else ''
+
+        # Processar apenas linhas "Semana NN"
+        if not nome_sem.startswith('Semana '):
+            continue
+
+        try:
+            num_sem = int(nome_sem.replace('Semana ', '').strip())
+        except ValueError:
+            continue
+
+        entrada: dict = {"semana": num_sem}
+        for ano in anos_disponiveis:
+            idx = idx_anos[ano]
+            val = cols[idx] if idx < len(cols) else '-'
+            casos = parse_num(val)
+            entrada[ano] = casos
+            # Rastrear pico por ano
+            if casos > pico_por_ano[ano]["casos"]:
+                pico_por_ano[ano] = {"semana": num_sem, "casos": casos}
+
+        por_semana.append(entrada)
+
+    # Ordenar semanas
+    por_semana.sort(key=lambda x: x["semana"])
+
+    saida_sem_ano = {
+        "_meta": {
+            "fonte": "sinan_dengue_semana_por_ano.csv",
+            "nota": (
+                "Dados AGREGADOS — total geral (não por município). "
+                "O CSV de origem não contém coluna de IBGE; representa o "
+                "somatório nacional/estadual exportado do SINAN."
+            ),
+            "anos_disponiveis": anos_disponiveis,
+            "total_semanas": len(por_semana),
+        },
+        "por_semana": por_semana,
+        "pico_por_ano": pico_por_ano,
+    }
+
+    dest_c = DEST / "dengue_semana_por_ano.json"
+    dest_c.write_text(json.dumps(saida_sem_ano, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"  Salvo: {dest_c}")
+    print(f"  Anos disponíveis: {anos_disponiveis}")
+    print(f"  Semanas processadas: {len(por_semana)}")
+    for ano in anos_disponiveis:
+        p = pico_por_ano[ano]
+        print(f"  Pico {ano}: SE {p['semana']} com {p['casos']:,} casos")
+
+
+# ===========================================================================
+# FASE D — dengue_semana_por_ano_municipio.json (município × semana × ano)
+# ===========================================================================
+
+print("\n" + "=" * 65)
+print("FASE D — dengue_semana_por_ano_municipio.json")
+print("=" * 65)
+
+ANOS_MUN   = [str(a) for a in range(2019, 2027)]
+N_SEMANAS  = 53
+
+
+def ler_csv_mun_semana(ano: str) -> dict:
+    """
+    Lê sinan_dengue_mun_semana_{ano}.csv.
+    Retorna {ibge6: [casos_s1, ..., casos_s53]} — apenas municípios SP.
+    """
+    path = BASE / f"sinan_dengue_mun_semana_{ano}.csv"
+    if not path.exists():
+        print(f"  [SKIP] {path.name} não encontrado.")
+        return {}
+
+    with open(path, encoding="iso-8859-1") as f:
+        raw = f.read()
+
+    raw = raw.replace('""', '"').replace(';"', ';').replace('";', ';')
+    raw = raw.replace('\r\n', '\n').strip()
+
+    lines  = raw.split('\n')
+    header = [h.strip().strip('"') for h in lines[0].split(';')]
+
+    # Detectar índices das colunas "Semana XX" (ignora Em Branco/ign, Total, etc.)
+    sem_indices: dict[int, int] = {}
+    for i, col in enumerate(header):
+        col_clean = col.strip()
+        if col_clean.lower().startswith('semana '):
+            try:
+                num = int(re.sub(r'[^\d]', '', col_clean))
+                if 1 <= num <= N_SEMANAS:
+                    sem_indices[num] = i
+            except ValueError:
+                pass
+
+    result: dict[str, list[int]] = {}
+    for line in lines[1:]:
+        line = line.strip().strip('"')
+        if not line:
+            continue
+        parts = line.split(';')
+        if len(parts) < 2:
+            continue
+
+        mun_raw = parts[0].strip().strip('"')
+        m = re.match(r'^(\d{6})', mun_raw)
+        if not m:
+            continue
+        ibge6 = m.group(1)
+        if ibge6[:2] != "35":
+            continue
+
+        casos_por_semana = [0] * N_SEMANAS
+        for num_sem, idx in sem_indices.items():
+            if idx < len(parts):
+                casos_por_semana[num_sem - 1] = parse_num(parts[idx])
+
+        result[ibge6] = casos_por_semana
+
+    return result
+
+
+# Ler todos os anos
+dados_por_ano_mun: dict[str, dict[str, list[int]]] = {}
+for ano in ANOS_MUN:
+    dados_por_ano_mun[ano] = ler_csv_mun_semana(ano)
+    n = len(dados_por_ano_mun[ano])
+    if n:
+        print(f"  {ano}: {n} municípios SP")
+
+# Anos que realmente têm dados
+anos_disp_mun = [a for a in ANOS_MUN if dados_por_ano_mun.get(a)]
+
+# Coletar todos os ibges presentes em pelo menos um ano
+todos_ibges_mun: set[str] = set()
+for d in dados_por_ano_mun.values():
+    todos_ibges_mun.update(d.keys())
+
+mun_out: dict = {}
+
+for ibge in sorted(todos_ibges_mun):
+    por_semana: list[dict] = []
+    pico_por_ano_mun: dict = {}
+
+    for sem_idx in range(N_SEMANAS):
+        entrada: dict = {"semana": sem_idx + 1}
+        for ano in anos_disp_mun:
+            entrada[ano] = dados_por_ano_mun[ano].get(ibge, [0] * N_SEMANAS)[sem_idx]
+        por_semana.append(entrada)
+
+    for ano in anos_disp_mun:
+        casos_ano = dados_por_ano_mun[ano].get(ibge, [0] * N_SEMANAS)
+        max_casos = max(casos_ano) if casos_ano else 0
+        max_sem   = (casos_ano.index(max_casos) + 1) if max_casos > 0 else 1
+        pico_por_ano_mun[ano] = {"semana": max_sem, "casos": max_casos}
+
+    mun_out[ibge] = {
+        "por_semana":       por_semana,
+        "pico_por_ano":     pico_por_ano_mun,
+        "anos_disponiveis": anos_disp_mun,
+    }
+
+dest_d = DEST / "dengue_semana_por_ano_municipio.json"
+dest_d.write_text(json.dumps(mun_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"\n  Salvo: {dest_d}")
+print(f"  Municípios: {len(mun_out)}")
+print(f"  Anos: {anos_disp_mun}")
+
+# Validar com Araçatuba (350640) e Bilac (350640 → verifica o que existir)
+for ibge_test in ["350640", "350900"]:
+    if ibge_test in mun_out:
+        p = mun_out[ibge_test]["pico_por_ano"]
+        nome_test = next((r["nome"] for r in rows_anual if r["ibge"] == ibge_test), ibge_test)
+        print(f"\n  Validação {nome_test} ({ibge_test}):")
+        for ano in ["2023", "2024", "2025", "2026"]:
+            if ano in p:
+                print(f"    {ano}: SE {p[ano]['semana']} com {p[ano]['casos']:,} casos")
+        break
+
+print("\n[FASE D CONCLUIDA]")

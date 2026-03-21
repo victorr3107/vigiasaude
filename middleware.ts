@@ -15,8 +15,10 @@ import { createServerClient } from '@supabase/ssr'
 const SUPER_ADMIN_ROUTES = [
   '/dashboard/usuarios',
   '/dashboard/municipios',
+  '/dashboard/sugestoes',
   '/api/admin/usuarios',
   '/api/admin/municipios',
+  '/api/admin/sugestoes',
 ]
 
 export async function middleware(request: NextRequest) {

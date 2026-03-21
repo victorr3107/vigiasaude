@@ -4,7 +4,11 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { ThemeProvider, useTheme } from '@/app/contexts/ThemeContext'
+import { ThemeProvider } from '@/app/contexts/ThemeContext'
+import ThemeToggle from '@/app/components/ThemeToggle'
+import BotaoSugestao from '@/app/components/BotaoSugestao'
+import PesquisaModal from '@/app/components/PesquisaModal'
+import { usePesquisa } from '@/app/hooks/usePesquisa'
 
 interface Perfil {
   id: string
@@ -39,10 +43,34 @@ const IconChevronLeft = ({ collapsed }: { collapsed: boolean }) => (
 )
 const IconCheck = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
 const IconMenu = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+const IconMosquito = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    {/* Corpo oval centralizado */}
+    <ellipse cx="12" cy="13" rx="4" ry="2.5"/>
+    {/* Cabeça */}
+    <circle cx="12" cy="9.5" r="1.5"/>
+    {/* Probóscide */}
+    <line x1="12" y1="11" x2="12" y2="15.5"/>
+    {/* Asa esquerda */}
+    <path d="M8 12 C5 8 3 7 4 10"/>
+    {/* Asa direita */}
+    <path d="M16 12 C19 8 21 7 20 10"/>
+    {/* Pernas dianteiras (esq/dir) */}
+    <line x1="8.5" y1="13" x2="5" y2="16"/>
+    <line x1="15.5" y1="13" x2="19" y2="16"/>
+    {/* Pernas do meio */}
+    <line x1="8" y1="14" x2="4.5" y2="18"/>
+    <line x1="16" y1="14" x2="19.5" y2="18"/>
+    {/* Pernas traseiras */}
+    <line x1="9" y1="15" x2="6.5" y2="19.5"/>
+    <line x1="15" y1="15" x2="17.5" y2="19.5"/>
+  </svg>
+)
 const IconX = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
 const IconGlobe = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-const IconSun = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-const IconMoon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+const IconLightbulb = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.1 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+const IconClipboardList = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/><polyline points="9 9 10.5 10.5 13 8"/></svg>
+const IconStethoscope = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 2v4a3.5 3.5 0 0 0 3.5 3.5"/><path d="M19.5 2v4A3.5 3.5 0 0 0 16 9.5"/><path d="M8 9.5a4 4 0 0 0 8 0"/><path d="M12 13.5V18"/><path d="M12 18a4 4 0 0 0 4 4"/><circle cx="18" cy="21" r="1.5" fill="currentColor" stroke="none"/></svg>
 
 // ── Separador visual na sidebar ───────────────────────────────────────────────
 const NavSeparator = ({ label, collapsed }: { label: string; collapsed: boolean }) => (
@@ -65,29 +93,18 @@ const NAV_ADMIN = [
   { href: '/dashboard',             label: 'Visão Geral',   icon: <IconGrid /> },
   { href: '/dashboard/usuarios',    label: 'Usuários',      icon: <IconUsers /> },
   { href: '/dashboard/municipios',  label: 'Municípios',    icon: <IconMap /> },
+  { href: '/dashboard/sugestoes',   label: 'Sugestões',     icon: <IconLightbulb /> },
+  { href: '/dashboard/pesquisas',   label: 'Pesquisas',     icon: <IconClipboardList /> },
   { href: '/dashboard/configuracoes', label: 'Configurações', icon: <IconSettings /> },
 ]
 
 const NAV_DADOS = [
   { href: '/dashboard/producao-aps',            label: 'Produção APS',        icon: <IconChart /> },
-  { href: '/dashboard/producao-ambulatorial',   label: 'Prod. Ambulatorial',  icon: <IconActivity /> },
+  { href: '/dashboard/producao-ambulatorial',   label: 'Prod. Ambulatorial',  icon: <IconStethoscope /> },
   { href: '/dashboard/morbidade-hospitalar',    label: 'Morbidade Hosp.',     icon: <IconHospital /> },
-  { href: '/dashboard/validacao-sisab',         label: 'Validação SISAB',     icon: <IconShieldCheck /> },
-  { href: '/dashboard/vigilancia-dengue',       label: 'Vigilância Dengue',   icon: <IconActivity /> },
+  { href: '/dashboard/vigilancia-dengue',       label: 'Dengue',              icon: <IconMosquito /> },
+  { href: '/dashboard/minhas-sugestoes',         label: 'Minhas Sugestões',    icon: <IconLightbulb /> },
 ]
-
-function ThemeToggle() {
-  const { isDark, toggleTema } = useTheme()
-  return (
-    <button onClick={toggleTema} title={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 34, height: 34, borderRadius: 8, cursor: 'pointer', background: 'var(--bg-input)', border: '1px solid var(--border-input)', color: 'var(--text-secondary)', transition: 'all 0.2s', flexShrink: 0 }}
-      onMouseEnter={e => { ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--accent-border)'; ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--accent)' }}
-      onMouseLeave={e => { ;(e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-input)'; ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--text-secondary)' }}
-    >
-      {isDark ? <IconSun /> : <IconMoon />}
-    </button>
-  )
-}
 
 function MunicipioSwitcher({ perfil, municipios, onSwitch }: { perfil: Perfil; municipios: MunicipioOption[]; onSwitch: (id: string | null) => void }) {
   const [open, setOpen] = useState(false)
@@ -169,6 +186,8 @@ function DashboardInner({ children, perfil, municipioOptions, onSwitch, onLogout
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [contadorSugestoes, setContadorSugestoes] = useState(0)
+  const { pesquisaAtiva, mostrarPesquisa, fecharPesquisa } = usePesquisa()
 
   useEffect(() => {
     const check = () => {
@@ -180,6 +199,36 @@ function DashboardInner({ children, perfil, municipioOptions, onSwitch, onLogout
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [])
+
+  // Buscar contador de sugestões para admin
+  useEffect(() => {
+    if (perfil?.role === 'super_admin') {
+      const buscarContador = async () => {
+        try {
+          const { data: { session } } = await supabase.auth.getSession()
+          if (!session) return
+
+          const response = await fetch('/api/admin/sugestoes/contador', {
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`
+            }
+          })
+
+          if (response.ok) {
+            const data = await response.json()
+            setContadorSugestoes(data.novas || 0)
+          }
+        } catch (error) {
+          console.error('Erro ao buscar contador:', error)
+        }
+      }
+
+      buscarContador()
+      // Buscar a cada 30 segundos
+      const interval = setInterval(buscarContador, 30000)
+      return () => clearInterval(interval)
+    }
+  }, [perfil])
 
   const sidebarW = isMobile ? 240 : (collapsed ? 64 : 240)
   const toggleSidebar = () => isMobile ? setSidebarOpen(o => !o) : setCollapsed(c => !c)
@@ -263,6 +312,11 @@ function DashboardInner({ children, perfil, municipioOptions, onSwitch, onLogout
             <ThemeToggle />
             <div style={{ width: 1, height: 24, background: 'var(--border)' }} className="hide-mobile" />
             <span className="hide-mobile" style={{ background: 'var(--accent-subtle)', color: 'var(--accent)', border: '1px solid var(--accent-border)', borderRadius: 20, padding: '3px 12px', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap' }}>{perfil.role}</span>
+            {perfil.role === 'super_admin' && contadorSugestoes > 0 && (
+              <Link href="/dashboard/sugestoes" className="hide-mobile" style={{ background: 'var(--danger)', color: '#fff', borderRadius: 20, padding: '3px 8px', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', textDecoration: 'none' }}>
+                {contadorSugestoes} sugestão{contadorSugestoes > 1 ? 'ões' : ''} nova{contadorSugestoes > 1 ? 's' : ''}
+              </Link>
+            )}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
                 {perfil.nome.charAt(0).toUpperCase()}
@@ -271,7 +325,7 @@ function DashboardInner({ children, perfil, municipioOptions, onSwitch, onLogout
             </div>
           </div>
         </header>
-        <main style={{ flex: 1, position: 'relative', overflowY: 'auto', overflowX: 'hidden', minWidth: 0 }} className="page-enter">
+        <main style={{ flex: 1, position: 'relative', overflowY: 'auto', overflowX: 'hidden', minWidth: 0, paddingBottom: 80 }} className="page-enter">
           {/* Overlay de transição de município */}
           {isSwitching && (
             <div style={{
@@ -295,6 +349,14 @@ function DashboardInner({ children, perfil, municipioOptions, onSwitch, onLogout
           </div>
         </main>
       </div>
+
+      {/* Botão de sugestão fixo */}
+      <BotaoSugestao />
+
+      {/* Modal de pesquisa */}
+      {mostrarPesquisa && pesquisaAtiva && (
+        <PesquisaModal pesquisa={pesquisaAtiva} onClose={fecharPesquisa} />
+      )}
     </div>
   )
 }

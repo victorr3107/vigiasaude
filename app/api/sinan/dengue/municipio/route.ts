@@ -37,6 +37,8 @@ export async function GET(req: Request) {
   const sazonalidadeDB = readJson('dengue_sazonalidade.json')
   const perfilDB       = readJson('dengue_perfil.json')
   const benchmarksDB   = readJson('dengue_benchmarks_sp.json')
+  const semanaAnoRaw   = readJson('dengue_semana_por_ano.json')
+  const semanaAnoMunDB = readJson('dengue_semana_por_ano_municipio.json')
 
   if (!historicoDB || !benchmarksDB) {
     return NextResponse.json(
@@ -58,8 +60,16 @@ export async function GET(req: Request) {
 
   const semana_atual = calcSemanaAtual(calPath)
 
+  // semana_por_ano_nacional: dados agregados nacionais (Brasil) do SINAN
+  const semana_por_ano_nacional = semanaAnoRaw ?? null
+
+  // semana_por_ano_municipio: dados reais do município × semana × ano
+  const semana_por_ano_municipio = semanaAnoMunDB
+    ? ((semanaAnoMunDB as Record<string, unknown>)[ibge6] ?? null)
+    : null
+
   return NextResponse.json(
-    { ibge: ibge6, historico, sazonalidade, perfil, benchmarks: benchmarksDB, semana_atual },
+    { ibge: ibge6, historico, sazonalidade, perfil, benchmarks: benchmarksDB, semana_atual, semana_por_ano_nacional, semana_por_ano_municipio },
     { headers: { 'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400' } }
   )
 }

@@ -33,6 +33,19 @@ interface OverviewData {
   recentes: UsuarioRecente[]
   producao: { ultimo: ProducaoResumo | null; anterior: ProducaoResumo | null }
   anual: { total: number; mesesComDados: number; anoAtual: number } | null
+  feedback?: {
+    sugestoes: {
+      total: number
+      novas: number
+      ultima: { titulo: string; categoria: string; criado_em: string } | null
+    }
+    pesquisas: {
+      ativas: number
+      total_respostas: number
+      ultimo_ciclo: { id: string; titulo: string; nps: number; total_completas: number } | null
+      variacao_nps: number | null
+    }
+  }
 }
 
 // ── ícones SVG ─────────────────────────────────────────────────────────────
@@ -59,6 +72,16 @@ const IcoBuilding = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
     <polyline points="9 22 9 12 15 12 15 22"/>
+  </svg>
+)
+const IcoMessageSquare = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+)
+const IcoClipboardList = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h2"/><path d="M8 16h2"/>
   </svg>
 )
 
@@ -148,13 +171,28 @@ export default function DashboardPage() {
         .select('municipio_ativo_id')
         .eq('id', session.user.id)
         .single()
+
       const mid = perfil?.municipio_ativo_id
       const url = mid ? `/api/admin/overview?municipio_id=${mid}` : '/api/admin/overview'
-      fetch(url)
-        .then(r => r.json())
-        .then(setData)
-        .catch(() => setErro('Não foi possível carregar os dados.'))
-        .finally(() => setLoading(false))
+      const [overviewRes, feedbackRes] = await Promise.all([
+        fetch(url),
+        fetch('/api/admin/feedback/overview', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        }),
+      ])
+
+      const overviewData = overviewRes.ok ? await overviewRes.json() : null
+      const feedbackData = feedbackRes.ok ? await feedbackRes.json() : null
+
+      if (overviewData) {
+        setData({
+          ...overviewData,
+          feedback: feedbackData
+        })
+      } else {
+        setErro('Não foi possível carregar os dados.')
+      }
+      setLoading(false)
     })
   }, [])
 
@@ -201,6 +239,114 @@ export default function DashboardPage() {
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: isMobile ? 10 : 16, marginBottom: 24 }}>
         {kpis.map(k => <KpiCard key={k.label} {...k} loading={loading} compact={isMobile} />)}
       </div>
+
+      {/* Feedback e Sugestões */}
+      {data?.feedback && (
+        <div style={{ marginBottom: 24 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16, fontFamily: 'Syne, sans-serif' }}>
+            Feedback e Sugestões
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 16 }}>
+
+            {/* Card Sugestões */}
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 24px', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Sugestões</p>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginTop: 4 }}>
+                    <span style={{ fontSize: 32, fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif' }}>
+                      {data.feedback.sugestoes.novas}
+                    </span>
+                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>não lidas</span>
+                  </div>
+                  <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--text-dim)' }}>
+                    {data.feedback.sugestoes.total} total enviadas
+                  </p>
+                </div>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(139,92,246,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8B5CF6' }}>
+                  <IcoMessageSquare />
+                </div>
+              </div>
+
+              {data.feedback.sugestoes.ultima && (
+                <div style={{ padding: '10px 12px', borderRadius: 10, background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
+                  <p style={{ margin: '0 0 2px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Última recebida</p>
+                  <p style={{ margin: 0, fontSize: 13, color: 'var(--text-primary)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {data.feedback.sugestoes.ultima.titulo}
+                  </p>
+                  <p style={{ margin: '2px 0 0', fontSize: 11, color: 'var(--text-dim)' }}>
+                    {new Date(data.feedback.sugestoes.ultima.criado_em).toLocaleDateString('pt-BR')}
+                  </p>
+                </div>
+              )}
+
+              <a href="/dashboard/sugestoes" style={{ marginTop: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>
+                Ver todas →
+              </a>
+            </div>
+
+            {/* Card Pesquisas */}
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 24px', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Pesquisas</p>
+                  {data.feedback.pesquisas.ultimo_ciclo ? (() => {
+                    const nps = data.feedback.pesquisas.ultimo_ciclo.nps
+                    const cor = nps >= 50 ? 'var(--success)' : nps >= 0 ? 'var(--warning)' : 'var(--danger)'
+                    return (
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginTop: 4 }}>
+                        <span style={{ fontSize: 32, fontWeight: 700, color: cor, fontFamily: 'Syne, sans-serif' }}>{nps}</span>
+                        <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>NPS último ciclo</span>
+                        {data.feedback.pesquisas.variacao_nps !== null && (
+                          <span style={{
+                            fontSize: 12, fontWeight: 700, padding: '2px 7px', borderRadius: 20,
+                            background: data.feedback.pesquisas.variacao_nps >= 0 ? 'var(--success-subtle)' : 'var(--danger-subtle)',
+                            color: data.feedback.pesquisas.variacao_nps >= 0 ? 'var(--success)' : 'var(--danger)',
+                          }}>
+                            {data.feedback.pesquisas.variacao_nps >= 0 ? '+' : ''}{data.feedback.pesquisas.variacao_nps}
+                          </span>
+                        )}
+                      </div>
+                    )
+                  })() : (
+                    <p style={{ margin: '8px 0 0', fontSize: 13, color: 'var(--text-dim)' }}>Nenhum ciclo com NPS ainda</p>
+                  )}
+                  <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--text-dim)' }}>
+                    {data.feedback.pesquisas.total_respostas} respostas completas · {data.feedback.pesquisas.ativas} ativa{data.feedback.pesquisas.ativas !== 1 ? 's' : ''}
+                  </p>
+                </div>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(16,185,129,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)' }}>
+                  <IcoClipboardList />
+                </div>
+              </div>
+
+              {data.feedback.pesquisas.ultimo_ciclo && (
+                <div style={{ padding: '10px 12px', borderRadius: 10, background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
+                  <p style={{ margin: '0 0 2px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Último ciclo</p>
+                  <p style={{ margin: 0, fontSize: 13, color: 'var(--text-primary)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {data.feedback.pesquisas.ultimo_ciclo.titulo}
+                  </p>
+                  <p style={{ margin: '2px 0 0', fontSize: 11, color: 'var(--text-dim)' }}>
+                    {data.feedback.pesquisas.ultimo_ciclo.total_completas} respostas completas
+                  </p>
+                </div>
+              )}
+
+              <div style={{ marginTop: 'auto', display: 'flex', gap: 12 }}>
+                {data.feedback.pesquisas.ultimo_ciclo && (
+                  <a href={`/dashboard/pesquisas/${data.feedback.pesquisas.ultimo_ciclo.id}/relatorio`} style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>
+                    Ver relatório →
+                  </a>
+                )}
+                <a href="/dashboard/pesquisas" style={{ fontSize: 13, color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>
+                  Gerenciar pesquisas
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* Resumo de produção */}
       {!loading && data?.producao?.ultimo && (() => {
