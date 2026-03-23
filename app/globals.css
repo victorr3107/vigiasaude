@@ -401,7 +401,6 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 20px 24px;
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -458,24 +457,150 @@ body {
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   RESPONSIVIDADE
+   RESPONSIVIDADE — Mobile-First
+   Breakpoints: sm ≥640  md ≥768  lg ≥1024  xl ≥1280
    ════════════════════════════════════════════════════════════════════════════ */
 
-@media (max-width: 768px) {
+/* ── Page container: ocupa 100% da largura disponível ──────────────────── */
+.page-container {
+  width: 100%;
+  min-width: 0;
+}
+
+/* ── Grids responsivos (base = mobile) ─────────────────────────────────── */
+
+/* KPIs: 2 cols mobile → 4 cols lg */
+.grid-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* 1 col → 2 cols md */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* 2 col mobile → 3 cols sm → 5 cols lg */
+.grid-5 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* Auto-fit genérico com minmax */
+.grid-auto-sm {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+.grid-auto-md {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+.grid-auto-lg {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* Flex: coluna mobile → row md */
+.flex-col-md-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Mobile defaults ───────────────────────────────────────────────────── */
+.search-input {
+  width: 100%;
+  min-width: 0;
+}
+.kpi-card {
+  padding: 16px 18px;
+}
+.hide-mobile {
+  display: none !important;
+}
+.toast {
+  bottom: 16px;
+  right: 16px;
+  left: 16px;
+  justify-content: center;
+}
+
+/* KPI card compact variant for small screens */
+.kpi-card .kpi-value {
+  font-size: 22px;
+}
+.kpi-card .kpi-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+.kpi-card .kpi-label {
+  font-size: 11px;
+}
+
+/* ── sm ≥ 640px ────────────────────────────────────────────────────────── */
+@media (min-width: 640px) {
+  .grid-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── md ≥ 768px ────────────────────────────────────────────────────────── */
+@media (min-width: 768px) {
   .search-input {
-    width: 100%;
-    min-width: 0;
+    width: 260px;
   }
   .kpi-card {
-    padding: 16px 18px;
+    padding: 20px 24px;
   }
   .hide-mobile {
-    display: none !important;
+    display: flex !important;
   }
   .toast {
-    bottom: 16px;
-    right: 16px;
-    left: 16px;
-    justify-content: center;
+    bottom: 24px;
+    right: 24px;
+    left: auto;
+    justify-content: flex-start;
   }
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .flex-col-md-row {
+    flex-direction: row;
+    align-items: center;
+  }
+  .kpi-card .kpi-value {
+    font-size: 32px;
+  }
+  .kpi-card .kpi-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+  .kpi-card .kpi-label {
+    font-size: 13px;
+  }
+}
+
+/* ── lg ≥ 1024px ───────────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  .grid-kpis {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .grid-5 {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* ── xl ≥ 1280px ───────────────────────────────────────────────────────── */
+@media (min-width: 1280px) {
+  /* nenhum override por enquanto — conteúdo flui livre */
 }

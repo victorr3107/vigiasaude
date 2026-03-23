@@ -576,14 +576,6 @@ export default function UsuariosPage() {
   const [filtro, setFiltro]     = useState<'todos' | 'ativos' | 'inativos'>('todos')
   const [busca, setBusca]       = useState('')
   const [toast, setToast]       = useState<{ msg: string; tipo: 'ok' | 'erro' } | null>(null)
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
 
   const showToast = (msg: string, tipo: 'ok' | 'erro' = 'ok') => {
     setToast({ msg, tipo })
@@ -672,7 +664,7 @@ export default function UsuariosPage() {
   })
 
   return (
-    <div style={{ maxWidth: 1100 }}>
+    <div className="page-container">
       {/* Header */}
       <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
         <div>
@@ -702,7 +694,7 @@ export default function UsuariosPage() {
       </div>
 
       {/* Filtros */}
-      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', marginBottom: 20, gap: 10 }}>
+      <div className="flex-col-md-row" style={{ justifyContent: 'space-between', marginBottom: 20 }}>
         <div style={{ display: 'flex', gap: 6 }} role="group" aria-label="Filtrar por status">
           {(['todos', 'ativos', 'inativos'] as const).map(f => (
             <button key={f} className={`filter-btn${filtro === f ? ' active' : ''}`} onClick={() => setFiltro(f)}>

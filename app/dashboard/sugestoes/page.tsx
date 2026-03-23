@@ -160,7 +160,7 @@ export default function AdminSugestoesPage() {
   )
 
   return (
-    <div style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 28, maxWidth: 1280 }}>
+    <div className="page-container" style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
       <style>{`@keyframes spin { to { transform: rotate(360deg) } } @keyframes fadeIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }`}</style>
 
       {/* Cabeçalho */}
@@ -174,7 +174,7 @@ export default function AdminSugestoesPage() {
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 14 }}>
+      <div className="grid-auto-md">
         {KPI_ORDER.map(key => {
           const cfg = STATUS_CONFIG[key]
           const ativo = filtros.status === key
@@ -212,7 +212,7 @@ export default function AdminSugestoesPage() {
 
       {/* Filtros */}
       <div style={{
-        display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: 12,
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12,
         background: 'var(--bg-surface)', border: '1px solid var(--border)',
         borderRadius: 14, padding: '16px 20px',
       }}>
@@ -258,6 +258,9 @@ export default function AdminSugestoesPage() {
       {/* Grid */}
       <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
 
+        {/* Cabeçalho da tabela + Linhas: envolve em scroll horizontal */}
+        <div style={{ overflowX: 'auto' }}>
+
         {/* Cabeçalho da tabela */}
         <div style={{
           display: 'grid',
@@ -265,6 +268,7 @@ export default function AdminSugestoesPage() {
           padding: '10px 20px',
           borderBottom: '1px solid var(--border)',
           background: 'var(--bg-base)',
+          minWidth: 900,
         }}>
           {['Sugestão', 'Categoria', 'Município', 'Usuário', 'Data', 'Status', 'Ação'].map(col => (
             <span key={col} style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -300,6 +304,7 @@ export default function AdminSugestoesPage() {
                   background: isNova ? 'rgba(96,165,250,0.04)' : 'transparent',
                   alignItems: 'center',
                   transition: 'background 0.15s',
+                  minWidth: 900,
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--accent-subtle)')}
                 onMouseLeave={e => (e.currentTarget.style.background = isNova ? 'rgba(96,165,250,0.04)' : 'transparent')}
@@ -374,6 +379,8 @@ export default function AdminSugestoesPage() {
             )
           })
         )}
+
+        </div>{/* fim overflowX */}
 
         {/* Paginação */}
         {totalPaginas > 1 && (

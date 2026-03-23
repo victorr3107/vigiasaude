@@ -1176,24 +1176,43 @@ function APSUnificadaInner() {
   }, [])
 
   // ── Carrega dados APS quando municipio ou ano muda ──────────────────────────
+  const redirectedRef = useRef(false)
+
   const fetchAps = useCallback(async (mun: Municipio, ano: number) => {
     setLoadingAps(true)
     try {
       const res = await fetch(`/api/dashboard/producao-aps?municipio_id=${mun.id}&ano=${ano}`)
       if (res.ok) {
         const json = await res.json()
-        setApsData(json.data ?? [])
-        setApsAnos(json.anos ?? [])
-        // Define ano padrão como o primeiro disponível
-        if (json.anos?.length > 0 && ano === new Date().getFullYear() && !json.anos.includes(ano)) {
-          setAnoSel(json.anos[0])
+        const anos = (json.anos ?? []) as number[]
+        setApsAnos(anos)
+
+        // Se o ano solicitado não existe nos disponíveis, redireciona para o mais recente
+        if (anos.length > 0 && !anos.includes(ano)) {
+          const melhorAno = anos[0]
+          redirectedRef.current = true
+          setAnoSel(melhorAno)
+          // Busca dados do ano correto diretamente
+          const res2 = await fetch(`/api/dashboard/producao-aps?municipio_id=${mun.id}&ano=${melhorAno}`)
+          if (res2.ok) {
+            const json2 = await res2.json()
+            setApsData(json2.data ?? [])
+          }
+        } else {
+          setApsData(json.data ?? [])
         }
       }
     } finally { setLoadingAps(false) }
   }, [])
 
   useEffect(() => {
-    if (municipio) fetchAps(municipio, anoSel)
+    if (!municipio) return
+    // Skip if we just redirected the year inside fetchAps
+    if (redirectedRef.current) {
+      redirectedRef.current = false
+      return
+    }
+    fetchAps(municipio, anoSel)
   }, [municipio, anoSel, fetchAps])
 
   // ── Carrega dados SISAB (independente do ano — a tela de validação usa seus próprios filtros) ──
@@ -1238,7 +1257,7 @@ function APSUnificadaInner() {
 
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
-    <div style={{ maxWidth: 1100 }}>
+    <div className="page-container">
       <style>{`
         @keyframes spin { to { transform: rotate(360deg) } }
         .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }

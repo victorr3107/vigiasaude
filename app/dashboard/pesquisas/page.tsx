@@ -121,7 +121,7 @@ export default function PesquisasAdminPage() {
   )
 
   return (
-    <div style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 28, maxWidth: 1280 }}>
+    <div className="page-container" style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
       <style>{`
         @keyframes spin { to { transform: rotate(360deg) } }
         @keyframes fadeIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
@@ -154,7 +154,7 @@ export default function PesquisasAdminPage() {
       </div>
 
       {/* KPI Cards — filtros clicáveis */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+      <div className="grid-kpis" style={{ gap: 14 }}>
         {KPI_STATUSES.map(key => {
           const cfg = STATUS_CONFIG[key]
           const ativo = filtroStatus === key

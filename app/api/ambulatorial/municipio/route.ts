@@ -25,11 +25,15 @@ export async function GET(req: Request) {
     return JSON.parse(readFileSync(p, 'utf-8'))
   }
 
-  const serieTemporal    = readJson('serie_temporal.json')    as Record<string, unknown> | null
-  const complexidade     = readJson('complexidade_mensal.json') as Record<string, unknown> | null
-  const caratData        = readJson('carater_atendimento.json') as Record<string, unknown> | null
-  const formaData        = readJson('forma_organizacao.json')   as Record<string, unknown> | null
-  const perfilData       = readJson('perfil_municipio.json')    as Record<string, unknown> | null
+  const serieTemporal        = readJson('serie_temporal.json')              as Record<string, unknown> | null
+  const complexidade         = readJson('complexidade_mensal.json')          as Record<string, unknown> | null
+  const caratData            = readJson('carater_atendimento.json')          as Record<string, unknown> | null
+  const formaData            = readJson('forma_organizacao.json')            as Record<string, unknown> | null
+  const perfilData           = readJson('perfil_municipio.json')             as Record<string, unknown> | null
+  // novos JSONs nacionais (siasus)
+  const complexAnualDB       = readJson('siasus_complexidade_anual.json')    as Record<string, unknown> | null
+  const caratAnualDB         = readJson('siasus_carater_anual.json')         as Record<string, unknown> | null
+  const financiamentoAnualDB = readJson('siasus_financiamento_anual.json')   as Record<string, unknown> | null
 
   if (!serieTemporal || !complexidade) {
     return NextResponse.json(
@@ -38,11 +42,14 @@ export async function GET(req: Request) {
     )
   }
 
-  const serie     = serieTemporal[ibge6]  ?? null
-  const complex   = complexidade[ibge6]   ?? null
-  const carat     = caratData?.[ibge6]    ?? null
-  const forma     = formaData?.[ibge6]    ?? null
-  const perfil    = perfilData?.[ibge6]   ?? null
+  const serie               = serieTemporal[ibge6]          ?? null
+  const complex             = complexidade[ibge6]            ?? null
+  const carat               = caratData?.[ibge6]             ?? null
+  const forma               = formaData?.[ibge6]             ?? null
+  const perfil              = perfilData?.[ibge6]            ?? null
+  const complexidade_anual  = complexAnualDB?.[ibge6]        ?? null
+  const carater_anual       = caratAnualDB?.[ibge6]          ?? null
+  const financiamento_anual = financiamentoAnualDB?.[ibge6]  ?? null
 
   if (!serie && !complex) {
     return NextResponse.json(
@@ -52,7 +59,8 @@ export async function GET(req: Request) {
   }
 
   return NextResponse.json(
-    { ibge: ibge6, serie, complexidade: complex, carater: carat, forma, perfil },
+    { ibge: ibge6, serie, complexidade: complex, carater: carat, forma, perfil,
+      complexidade_anual, carater_anual, financiamento_anual },
     { headers: { 'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400' } }
   )
 }

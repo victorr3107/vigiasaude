@@ -535,7 +535,7 @@ export default function ConfiguracoesPage() {
   )
 
   return (
-    <div style={{ maxWidth: 680 }}>
+    <div className="page-container">
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontFamily: 'Syne, sans-serif', fontSize: 26, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>

@@ -99,8 +99,8 @@ function Skeleton({ w = '100%', h = 20, radius = 6 }: { w?: string | number; h?:
 
 // ── KPI card ───────────────────────────────────────────────────────────────
 
-function KpiCard({ label, value, sub, accent, icon, loading, compact }: {
-  label: string; value: number; sub: string; accent: string; icon: React.ReactNode; loading: boolean; compact?: boolean
+function KpiCard({ label, value, sub, accent, icon, loading }: {
+  label: string; value: number; sub: string; accent: string; icon: React.ReactNode; loading: boolean
 }) {
   return (
     <div className="kpi-card"
@@ -115,27 +115,24 @@ function KpiCard({ label, value, sub, accent, icon, loading, compact }: {
         pointerEvents: 'none',
       }} />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: compact ? 8 : 12 }}>
-        <span style={{ color: 'var(--text-muted)', fontSize: compact ? 11 : 13, fontWeight: 500, lineHeight: 1.3 }}>{label}</span>
-        {!compact && (
-          <div style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: accent + '18',
-            border: `1px solid ${accent}30`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: accent, flexShrink: 0,
-          }}>
-            {icon}
-          </div>
-        )}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+        <span className="kpi-label" style={{ color: 'var(--text-muted)', fontWeight: 500, lineHeight: 1.3 }}>{label}</span>
+        <div className="kpi-icon" style={{
+          background: accent + '18',
+          border: `1px solid ${accent}30`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: accent, flexShrink: 0,
+        }}>
+          {icon}
+        </div>
       </div>
 
-      <div style={{ marginBottom: compact ? 10 : 16 }}>
+      <div style={{ marginBottom: 16 }}>
         {loading ? (
-          <Skeleton w={60} h={compact ? 24 : 36} />
+          <Skeleton w={60} h={36} />
         ) : (
-          <span style={{
-            fontSize: 'clamp(18px, 4vw, 36px)', fontWeight: 700,
+          <span className="kpi-value" style={{
+            fontWeight: 700,
             color: 'var(--text-primary)',
             fontFamily: 'Syne, sans-serif',
             lineHeight: 1,
@@ -143,7 +140,7 @@ function KpiCard({ label, value, sub, accent, icon, loading, compact }: {
             {value.toLocaleString('pt-BR')}
           </span>
         )}
-        <p style={{ color: 'var(--text-muted)', fontSize: compact ? 11 : 12, marginTop: 4 }}>{sub}</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: 12, marginTop: 4 }}>{sub}</p>
       </div>
 
       <div style={{
@@ -161,7 +158,6 @@ export default function DashboardPage() {
   const [data, setData] = useState<OverviewData | null>(null)
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
-  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -196,13 +192,6 @@ export default function DashboardPage() {
     })
   }, [])
 
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-
   const kpis = [
     { label: 'Total de Usuários', value: data?.usuarios.total    ?? 0, sub: 'cadastrados no sistema', accent: 'var(--chart-indigo)', icon: <IcoUsers /> },
     { label: 'Usuários Ativos',   value: data?.usuarios.ativos   ?? 0, sub: 'com acesso liberado',    accent: 'var(--chart-green)', icon: <IcoUserCheck /> },
@@ -211,7 +200,7 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div style={{ maxWidth: 1100 }}>
+    <div className="page-container">
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <h1 style={{
@@ -236,8 +225,8 @@ export default function DashboardPage() {
       )}
 
       {/* KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: isMobile ? 10 : 16, marginBottom: 24 }}>
-        {kpis.map(k => <KpiCard key={k.label} {...k} loading={loading} compact={isMobile} />)}
+      <div className="grid-kpis" style={{ marginBottom: 24 }}>
+        {kpis.map(k => <KpiCard key={k.label} {...k} loading={loading} />)}
       </div>
 
       {/* Feedback e Sugestões */}
@@ -246,7 +235,7 @@ export default function DashboardPage() {
           <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16, fontFamily: 'Syne, sans-serif' }}>
             Feedback e Sugestões
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 16 }}>
+          <div className="grid-2">
 
             {/* Card Sugestões */}
             <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 24px', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -386,7 +375,7 @@ export default function DashboardPage() {
                 </span>
               )}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: 16 }}>
+            <div className="grid-5">
               <div>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total mensal</span>
                 <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Syne, sans-serif', marginTop: 2 }}>

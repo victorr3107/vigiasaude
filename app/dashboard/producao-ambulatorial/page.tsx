@@ -115,6 +115,37 @@ interface Benchmarks {
   total_municipios: number
 }
 
+// ── novos tipos nacionais (siasus) ────────────────────────────────────────────
+
+interface QtdPct { qtd: number; pct: number }
+
+interface AnoComplexidade {
+  ab: QtdPct; mc: QtdPct; ac: QtdPct; na: QtdPct; total: number
+}
+interface ComplexidadeAnual {
+  por_ano: Record<string, AnoComplexidade>
+  var_ac_2425_pct: number | null
+  var_mc_2425_pct: number | null
+  var_ab_2425_pct: number | null
+  perfil_2025: 'POLO_AC' | 'POLO_MC' | 'AB_DOMINANTE' | 'EQUILIBRADO'
+}
+
+interface AnoCarater {
+  eletivo: QtdPct; urgencia: QtdPct; acidentes: QtdPct; bpa: QtdPct; total: number
+}
+interface CaraterAnual {
+  por_ano: Record<string, AnoCarater>
+  var_urgencia_2425_pp: number | null
+  var_eletivo_2425_pp: number | null
+}
+
+interface FonteFinanciamento { codigo: string; fonte: string; valor: number; pct: number }
+interface FinanciamentoAnual {
+  por_ano: Record<string, FonteFinanciamento[]>
+  fonte_dominante_2025: string | null
+  var_maior_fonte_2425_pct: number | null
+}
+
 interface DadosMunicipio {
   ibge: string
   serie: SerieTemporal
@@ -122,6 +153,9 @@ interface DadosMunicipio {
   carater: CaraterAtendimento | null
   forma: FormaOrganizacao | null
   perfil: PerfilMunicipio | null
+  complexidade_anual: ComplexidadeAnual | null
+  carater_anual: CaraterAnual | null
+  financiamento_anual: FinanciamentoAnual | null
 }
 
 type AnoFiltro = 2024 | 2025 | 'comparar'
@@ -310,23 +344,60 @@ function AmbKPIs({ dados, benchmarks, ano }: { dados: DadosMunicipio; benchmarks
       </div>
 
       {/* Card 4: Glosa */}
-      <div className="kpi-card" style={{ position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: -30, right: -20, width: 100, height: 100, background: glosaClass.color, opacity: 0.07, borderRadius: '50%', filter: 'blur(24px)', pointerEvents: 'none' }} />
-        <p style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Glosa · {mesRecente}</p>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
-          <p style={{ fontSize: 'clamp(20px,3.5vw,32px)', fontWeight: 700, color: glosaClass.color, fontFamily: 'Syne, sans-serif', lineHeight: 1 }}>
-            {fmtPct(glosaAtual)}
-          </p>
-          <span style={{ fontSize: 11, fontWeight: 700, color: glosaClass.color, background: 'var(--bg-surface-2)', border: `1px solid ${glosaClass.color}`, borderRadius: 12, padding: '2px 8px' }}>
-            {glosaClass.label}
-          </span>
-        </div>
-        <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6 }}>procedimentos apresentados não aprovados pelo SIASUS</p>
-        {medGlosa != null && (
-          <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>Mediana SP: {fmtPct(medGlosa)}</p>
-        )}
-        <div style={{ height: 3, borderRadius: 4, marginTop: 12, background: `linear-gradient(90deg, ${glosaClass.color}, transparent)` }} />
-      </div>
+      {(() => {
+        // sparkline: média anual de taxa_glosa_qtd para 2022→2025
+        const glosaSparkline = ['2022','2023','2024','2025'].map(ano => {
+          const meses = serie.por_mes.filter(m => m.mes.startsWith(ano) && m.taxa_glosa_qtd > 0)
+          const media = meses.length > 0
+            ? meses.reduce((s, m) => s + m.taxa_glosa_qtd, 0) / meses.length
+            : null
+          return { ano, v: media }
+        }).filter(d => d.v !== null) as { ano: string; v: number }[]
+
+        const sparkMax = Math.max(...glosaSparkline.map(d => d.v), 0.01)
+        const sparkH   = 28
+
+        return (
+          <div className="kpi-card" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: -30, right: -20, width: 100, height: 100, background: glosaClass.color, opacity: 0.07, borderRadius: '50%', filter: 'blur(24px)', pointerEvents: 'none' }} />
+            <p style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Glosa · {mesRecente}</p>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
+              <p style={{ fontSize: 'clamp(20px,3.5vw,32px)', fontWeight: 700, color: glosaClass.color, fontFamily: 'Syne, sans-serif', lineHeight: 1 }}>
+                {fmtPct(glosaAtual)}
+              </p>
+              <span style={{ fontSize: 11, fontWeight: 700, color: glosaClass.color, background: 'var(--bg-surface-2)', border: `1px solid ${glosaClass.color}`, borderRadius: 12, padding: '2px 8px' }}>
+                {glosaClass.label}
+              </span>
+            </div>
+            <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6 }}>procedimentos apresentados não aprovados pelo SIASUS</p>
+            {medGlosa != null && (
+              <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6 }}>Mediana SP: {fmtPct(medGlosa)}</p>
+            )}
+            {/* Sparkline 2022→2025 */}
+            {glosaSparkline.length >= 2 && (
+              <div style={{ marginTop: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: sparkH }}>
+                  {glosaSparkline.map(({ ano, v }) => {
+                    const barH = Math.max(3, Math.round((v / sparkMax) * sparkH))
+                    const isLast = ano === '2025'
+                    return (
+                      <div key={ano} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                        <div
+                          title={`${ano}: ${fmtPct(v)}`}
+                          style={{ width: '100%', height: barH, borderRadius: 2, background: isLast ? glosaClass.color : 'var(--border-strong)', opacity: isLast ? 1 : 0.5, transition: 'height 0.4s' }}
+                        />
+                        <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>{ano.slice(2)}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+                <p style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 2 }}>glosa média anual (qtd)</p>
+              </div>
+            )}
+            <div style={{ height: 3, borderRadius: 4, marginTop: 10, background: `linear-gradient(90deg, ${glosaClass.color}, transparent)` }} />
+          </div>
+        )
+      })()}
 
     </div>
   )
@@ -441,9 +512,17 @@ function AmbEvolucaoTotal({ dados, benchmarks, ano }: { dados: DadosMunicipio; b
 
 // ── componente 3: AmbEvolucaoComplexidade ─────────────────────────────────────
 
+const ANOS_COMPLEX = ['2022', '2023', '2024', '2025']
+const COR_COMPLEX: Record<string, string> = {
+  ab: 'var(--chart-green)',
+  mc: 'var(--chart-blue)',
+  ac: 'var(--chart-purple)',
+}
+
 function AmbEvolucaoComplexidade({ dados, benchmarks, ano }: { dados: DadosMunicipio; benchmarks: Benchmarks | null; ano: AnoFiltro }) {
   const [showSazon, setShowSazon] = useState(false)
-  const { complexidade, perfil } = dados
+  const [modoComplex, setModoComplex] = useState<'mensal' | 'anual'>('mensal')
+  const { complexidade, perfil, complexidade_anual } = dados
 
   const mesesFiltrados = (() => {
     if (ano === 2024) return complexidade.por_mes.filter(m => m.mes.startsWith('2024'))
@@ -490,8 +569,71 @@ function AmbEvolucaoComplexidade({ dados, benchmarks, ano }: { dados: DadosMunic
     tendencia ? ` Nos últimos 3 meses, tendência de AC: ${tendencia}.` : '',
   ].join('')
 
+  // dados para o modo comparativo anual
+  const anosDispComplex = complexidade_anual
+    ? ANOS_COMPLEX.filter(a => complexidade_anual.por_ano[a])
+    : []
+  const temAnualComplex = anosDispComplex.length >= 2
+
+  const dadosAnuaisChart = anosDispComplex.map(ano => ({
+    ano,
+    ab: complexidade_anual!.por_ano[ano].ab.qtd,
+    mc: complexidade_anual!.por_ano[ano].mc.qtd,
+    ac: complexidade_anual!.por_ano[ano].ac.qtd,
+  }))
+
+  const varAC_anual = complexidade_anual?.var_ac_2425_pct ?? null
+  const narrativaAnual = varAC_anual !== null
+    ? `AC ${varAC_anual >= 0 ? 'cresceu' : 'caiu'} ${fmtPct(Math.abs(varAC_anual))} de 2024 para 2025.`
+    : null
+
   return (
-    <Card title="Evolução por Complexidade" subtitle="Produção mensal por nível — componente central">
+    <Card title="Evolução por Complexidade" subtitle="Produção por nível — mensal ou comparativo anual">
+      {/* toggle modo */}
+      {temAnualComplex && (
+        <div style={{ display: 'flex', gap: 3, marginBottom: 14 }}>
+          {(['mensal', 'anual'] as const).map(m => (
+            <button key={m} onClick={() => setModoComplex(m)} style={{
+              fontSize: 11, padding: '3px 11px', borderRadius: 20, cursor: 'pointer', fontFamily: 'inherit',
+              border: `1px solid ${modoComplex === m ? 'var(--accent)' : 'var(--border-input)'}`,
+              background: modoComplex === m ? 'var(--accent-subtle)' : 'transparent',
+              color: modoComplex === m ? 'var(--accent)' : 'var(--text-muted)',
+            }}>
+              {m === 'mensal' ? 'Mensal' : 'Comparativo anual'}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* modo comparativo anual */}
+      {modoComplex === 'anual' && temAnualComplex && (
+        <div>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={dadosAnuaisChart} margin={{ top: 8, right: 16, left: 10, bottom: 0 }} barCategoryGap="25%">
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis dataKey="ano" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={fmtK} width={48} />
+              <Tooltip
+                formatter={(v: unknown, name: unknown) => [fmtN(Number(v)), String(name)]}
+                contentStyle={{ background: 'var(--bg-modal)', border: '1px solid var(--border-strong)', borderRadius: 10, fontSize: 12 }}
+                labelStyle={{ color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6 }}
+              />
+              <Legend wrapperStyle={{ fontSize: 12 }} formatter={(v: unknown) => <span style={{ color: 'var(--text-secondary)' }}>{String(v)}</span>} />
+              <Bar dataKey="ab" name="Atenção Básica"     fill={COR_COMPLEX.ab} radius={[3,3,0,0]} />
+              <Bar dataKey="mc" name="Média Complexidade" fill={COR_COMPLEX.mc} radius={[3,3,0,0]} />
+              <Bar dataKey="ac" name="Alta Complexidade"  fill={COR_COMPLEX.ac} radius={[3,3,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+          {narrativaAnual && (
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 10, lineHeight: 1.6, background: 'var(--bg-surface-2)', borderRadius: 8, padding: '8px 12px' }}>
+              {narrativaAnual}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* modo mensal (original) */}
+      {modoComplex === 'mensal' && (<>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 16, alignItems: 'start' }}>
         <div>
           <ResponsiveContainer width="100%" height={280}>
@@ -582,6 +724,7 @@ function AmbEvolucaoComplexidade({ dados, benchmarks, ano }: { dados: DadosMunic
           </div>
         )}
       </div>
+      </>)} {/* fim modo mensal */}
     </Card>
   )
 }
@@ -697,14 +840,77 @@ function AmbCaraterOrganizacao({ dados, isMobile }: { dados: DadosMunicipio; isM
           {narrativa}
         </p>
       )}
+
+      {/* Evolução do caráter por ano */}
+      {dados.carater_anual && (() => {
+        const ca = dados.carater_anual!
+        const anosDisp = ['2022','2023','2024','2025'].filter(a => ca.por_ano[a])
+        if (anosDisp.length < 2) return null
+
+        const lineData = anosDisp.map(a => ({
+          ano: a,
+          eletivo:  ca.por_ano[a].eletivo.pct,
+          urgencia: ca.por_ano[a].urgencia.pct,
+        }))
+
+        const varUrg = ca.var_urgencia_2425_pp
+        const alertaUrgencia = varUrg !== null && varUrg > 5
+
+        return (
+          <div style={{ marginTop: 24, borderTop: '1px solid var(--border)', paddingTop: 18 }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 4 }}>
+              Evolução do Caráter por Ano
+            </p>
+            <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 12 }}>
+              % eletivo e % urgência de 2022 a 2025
+            </p>
+            <ResponsiveContainer width="100%" height={180}>
+              <ComposedChart data={lineData} margin={{ top: 4, right: 20, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="ano" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis
+                  tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} width={36}
+                  tickFormatter={v => `${v.toFixed(0)}%`} domain={[0, 100]}
+                />
+                <Tooltip
+                  formatter={(v: unknown, name: unknown) => [`${Number(v).toFixed(1)}%`, String(name)]}
+                  contentStyle={{ background: 'var(--bg-modal)', border: '1px solid var(--border-strong)', borderRadius: 10, fontSize: 12 }}
+                  labelStyle={{ color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6 }}
+                />
+                <Legend wrapperStyle={{ fontSize: 12 }} formatter={(v: unknown) => <span style={{ color: 'var(--text-secondary)' }}>{String(v)}</span>} />
+                <Line type="monotone" dataKey="eletivo"  name="Eletivo"   stroke="var(--chart-blue)"   strokeWidth={2} dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="urgencia" name="Urgência"   stroke="var(--chart-orange, #f97316)" strokeWidth={2} dot={{ r: 4 }} />
+              </ComposedChart>
+            </ResponsiveContainer>
+            {alertaUrgencia && (
+              <p style={{ fontSize: 12, color: 'var(--danger)', marginTop: 10, lineHeight: 1.6, background: 'var(--danger-subtle)', border: '1px solid var(--danger)', borderRadius: 8, padding: '8px 12px' }}>
+                Urgência cresceu {fmtPct(Math.abs(varUrg!))} de 2024 para 2025 — variação acima de 5 pp. Verifique se há alteração no perfil de atendimento.
+              </p>
+            )}
+            {!alertaUrgencia && varUrg !== null && (
+              <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
+                Variação urgência 2024→2025: {varUrg >= 0 ? '+' : ''}{varUrg.toFixed(2)} pp
+              </p>
+            )}
+          </div>
+        )
+      })()}
     </Card>
   )
 }
 
 // ── componente 5: AmbFinanceiro ───────────────────────────────────────────────
 
+const CORES_FONTE: Record<string, string> = {
+  '02': 'var(--chart-green)',
+  '04': 'var(--chart-purple)',
+  '05': 'var(--chart-blue)',
+  '06': 'var(--chart-yellow, #f59e0b)',
+  '07': 'var(--danger)',
+}
+
 function AmbFinanceiro({ dados, benchmarks, ano }: { dados: DadosMunicipio; benchmarks: Benchmarks | null; ano: AnoFiltro }) {
-  const { serie } = dados
+  const { serie, financiamento_anual } = dados
   const anoNum = ano === 'comparar' ? 2025 : ano
 
   const meses = serie.por_mes.filter(m => m.mes.startsWith(String(anoNum)) && m.valor_aprovado != null)
@@ -789,6 +995,74 @@ function AmbFinanceiro({ dados, benchmarks, ano }: { dados: DadosMunicipio; benc
           Dados financeiros disponíveis a partir de Out/2023.
         </p>
       )}
+
+      {/* Fontes de financiamento por ano */}
+      {financiamento_anual && (() => {
+        const anos = ['2022','2023','2024','2025'].filter(a => financiamento_anual.por_ano[a]?.length)
+        if (anos.length === 0) return null
+
+        // coleta todas as fontes únicas
+        const todasFontes = Array.from(new Set(
+          anos.flatMap(a => financiamento_anual.por_ano[a].map(f => f.codigo))
+        ))
+
+        const chartData = anos.map(a => {
+          const row: Record<string, string | number> = { ano: a }
+          for (const f of financiamento_anual.por_ano[a]) {
+            row[f.codigo] = f.valor
+            row[`_nome_${f.codigo}`] = f.fonte
+          }
+          return row
+        })
+
+        const fonteDom  = financiamento_anual.fonte_dominante_2025
+        const varDom    = financiamento_anual.var_maior_fonte_2425_pct
+
+        return (
+          <div style={{ marginTop: 24 }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 4 }}>
+              Fontes de Financiamento por Ano
+            </p>
+            {fonteDom && (
+              <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
+                Fonte dominante em 2025: <strong style={{ color: 'var(--text-primary)' }}>{fonteDom}</strong>
+                {varDom !== null && (
+                  <> · variação 2024→2025: {deltaBadge(varDom, '%')}</>
+                )}
+              </p>
+            )}
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={chartData} margin={{ top: 4, right: 16, left: 10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="ano" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis
+                  tick={{ fill: 'var(--text-muted)', fontSize: 9 }} axisLine={false} tickLine={false} width={60}
+                  tickFormatter={v => v >= 1e6 ? `R$${(v/1e6).toFixed(1)}M` : v >= 1e3 ? `R$${(v/1e3).toFixed(0)}k` : `R$${v}`}
+                />
+                <Tooltip
+                  formatter={(v: unknown, name: unknown) => [`R$ ${fmtN(Math.round(Number(v)))}`, String(name)]}
+                  contentStyle={{ background: 'var(--bg-modal)', border: '1px solid var(--border-strong)', borderRadius: 10, fontSize: 12 }}
+                  labelStyle={{ color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6 }}
+                />
+                <Legend wrapperStyle={{ fontSize: 11 }} formatter={(v: unknown) => <span style={{ color: 'var(--text-secondary)' }}>{String(v)}</span>} />
+                {todasFontes.map(cod => {
+                  // descobre nome da fonte
+                  const nome = anos.reduce<string>((acc, a) => {
+                    const f = financiamento_anual.por_ano[a]?.find(x => x.codigo === cod)
+                    return f ? f.fonte : acc
+                  }, cod)
+                  return (
+                    <Bar key={cod} dataKey={cod} name={nome} stackId="s"
+                      fill={CORES_FONTE[cod] ?? 'var(--chart-slate, #94a3b8)'}
+                      radius={todasFontes.indexOf(cod) === todasFontes.length - 1 ? [3,3,0,0] : [0,0,0,0]}
+                    />
+                  )
+                })}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )
+      })()}
     </Card>
   )
 }
@@ -971,7 +1245,7 @@ function ProducaoAmbulatorialInner() {
   const municipioLabel = perfil ? `${perfil.nome}${perfil.uf ? ` · ${perfil.uf}` : ''}` : '—'
 
   return (
-    <div style={{ maxWidth: 1200, width: '100%', minWidth: 0 }}>
+    <div className="page-container" style={{ width: '100%', minWidth: 0 }}>
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         @keyframes spin { to { transform: rotate(360deg) } }

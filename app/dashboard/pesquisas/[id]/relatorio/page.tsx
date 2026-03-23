@@ -92,7 +92,7 @@ export default function RelatorioPesquisaPage() {
   const { pesquisa, kpis, evolucao_diaria, por_municipio, resultados_por_pergunta } = relatorio
 
   return (
-    <div style={{ maxWidth: 960, padding: '0 0 48px' }}>
+    <div className="page-container" style={{ paddingBottom: 48 }}>
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
         <button
@@ -123,7 +123,7 @@ export default function RelatorioPesquisaPage() {
       </div>
 
       {/* KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 28 }}>
+      <div className="grid-5" style={{ gap: 12, marginBottom: 28 }}>
         {[
           { label: 'Exibições', value: kpis.total_respostas, cor: 'var(--info)' },
           { label: 'Completas', value: kpis.total_completas, cor: 'var(--success)' },

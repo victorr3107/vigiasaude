@@ -953,7 +953,7 @@ function AbaSazonalidade({ dados }: { dados: DadosDengue }) {
           )}
         </div>
         <ResponsiveContainer width="100%" height={200}>
-          <AreaChart data={areaData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+          <AreaChart data={areaData} margin={{ top: 22, right: 24, bottom: 0, left: 0 }}>
             <defs>
               <linearGradient id="gradSazon" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%"  stopColor="var(--accent)" stopOpacity={0.35} />
@@ -1431,14 +1431,7 @@ function VigilanciaDeingueInner() {
   const [loading, setLoading] = useState(true)
   const [erro,    setErro]    = useState<string | null>(null)
   const [perfil,  setPerfil]  = useState<{ ibge: string; nome: string } | null>(null)
-  const [isMobile, setIsMobile] = useState(false)
 
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768)
-    const handler = () => setIsMobile(window.innerWidth < 768)
-    window.addEventListener('resize', handler)
-    return () => window.removeEventListener('resize', handler)
-  }, [])
 
   const fetchDados = useCallback(async (ibge: string) => {
     setLoading(true)
@@ -1529,13 +1522,13 @@ function VigilanciaDeingueInner() {
         .section-title { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
       `}</style>
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: isMobile ? '0 12px 32px' : '0 0 32px' }}>
+      <div className="page-container" style={{ paddingBottom: 32 }}>
 
         {/* ── Header ── */}
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 8 }}>
             <div>
-              <h1 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: 'var(--text-primary)', margin: 0, lineHeight: 1.3 }}>
+              <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)', margin: 0, lineHeight: 1.3 }}>
                 Vigilância — Dengue
               </h1>
               <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 4 }}>
@@ -1545,7 +1538,7 @@ function VigilanciaDeingueInner() {
 
             {/* Badge semana atual */}
             {semAtual && (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'flex-start' : 'flex-end', gap: 4 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
                   SE {semAtual.semana}/{semAtual.ano} · {dataRange(semAtual.inicio, semAtual.fim)}
                 </div>

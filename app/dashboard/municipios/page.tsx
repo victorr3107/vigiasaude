@@ -288,7 +288,7 @@ export default function MunicipiosPage() {
   const precisaBusca = filtro !== 'true' && busca.trim().length < 2
 
   return (
-    <div style={{ maxWidth: 900 }}>
+    <div className="page-container">
       {/* Header ── */}
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontFamily: 'Syne, sans-serif', fontSize: 26, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
